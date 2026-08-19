@@ -74,6 +74,11 @@ $permissions = [
     ['admissions.application.reject', 'admissions'],
     ['admissions.enrolment.create', 'admissions'],
     ['admissions.enrolment.transfer', 'admissions'],
+    ['education.course.create', 'education'],
+    ['education.course.update', 'education'],
+    ['education.lesson.view', 'education'],
+    ['education.assignment.grade', 'education'],
+    ['education.certificate.issue', 'education'],
 ];
 foreach ($permissions as [$code, $module]) {
     insertIgnore($pdo, 'INSERT IGNORE INTO permissions (code, module) VALUES (:c,:m)', ['c' => $code, 'm' => $module]);
@@ -91,6 +96,7 @@ $grants = [
         // Decision 9: a centre manager recommends, management decides.
         'admissions.application.view_any', 'admissions.application.approve',
         'admissions.application.reject', 'admissions.enrolment.transfer',
+        'education.lesson.view', 'education.certificate.issue',
     ],
     'administrator' => [
         'identity.user.view_any', 'identity.user.create', 'identity.user.update', 'identity.user.suspend',
@@ -102,6 +108,8 @@ $grants = [
         'admissions.application.view_any', 'admissions.application.create',
         'admissions.application.review', 'admissions.application.approve',
         'admissions.application.reject', 'admissions.enrolment.create',
+        'education.course.create', 'education.course.update', 'education.lesson.view',
+        'education.certificate.issue',
     ],
     'centre_manager' => [
         'identity.user.view_any', 'staff.member.view_any',
@@ -112,6 +120,7 @@ $grants = [
         // Reviews and admits at their own centre, but cannot approve — Decision 9.
         'admissions.application.view_any', 'admissions.application.review',
         'admissions.enrolment.create',
+        'education.lesson.view',
     ],
     // Activation is payment-driven once Phase 9 lands, and the accountant is who verifies
     // payments (05-finance-payments.md) — so activation sits with them, not the cashier.
@@ -123,6 +132,11 @@ $grants = [
     'instructor' => [
         'education.programme.view_any', 'operations.session.schedule',
         'operations.attendance.mark', 'operations.attendance.view_any',
+        // `education.course.update` is ◐ in 03-rbac.md §5 — only for assigned courses.
+        // Scoping to "assigned" is not modelled yet, so the safer half is granted: an
+        // instructor can read course content and grade their own students' work, but
+        // cannot edit the syllabus. Noted in 13-lms.md §8.
+        'education.lesson.view', 'education.assignment.grade',
     ],
     // Front desk: takes applications from walk-ins, but has no say in the decision.
     'receptionist' => [
@@ -267,6 +281,73 @@ foreach (['blessing.eze@ultrademy.com' => 'UD-2026-0001', 'kelvin.musa@ultrademy
     insertIgnore($pdo, 'INSERT IGNORE INTO enrolments (student_no, user_id, programme_id, cohort_id, centre_id, status)
         VALUES (:no,:u,:p,:c,:centre,\'active\')', [
         'no' => $studentNo, 'u' => $uid, 'p' => $webDevId, 'c' => $cohortId, 'centre' => $gwgId,
+    ]);
+}
+
+echo "Seeding a course with modules, lessons and an assignment...\n";
+insertIgnore($pdo, "INSERT IGNORE INTO courses (title, slug, description, objectives, prerequisites, status, standalone)
+    VALUES (:t,:s,:d,:o,:p,'published',0)", [
+    't' => 'Web Development Foundations',
+    's' => 'web-development-foundations',
+    'd' => 'The groundwork every web developer needs: how the web works, HTML, CSS and your first JavaScript.',
+    'o' => "Explain how a browser requests and renders a page.\nBuild a responsive page from a design.\nWrite JavaScript that reacts to user input.",
+    'p' => 'Basic computer literacy. No prior coding experience required.',
+]);
+$courseId = idBy($pdo, 'courses', 'slug', 'web-development-foundations');
+
+// Reachable only through a programme — so link it to Web Development.
+insertIgnore($pdo, 'INSERT IGNORE INTO programme_courses (programme_id, course_id, sort_order) VALUES (:p,:c,0)', [
+    'p' => idBy($pdo, 'programmes', 'code', 'PRG-WEBDEV'), 'c' => $courseId,
+]);
+
+// [module title, summary, [ [lesson title, type, minutes, is_preview, body], ... ] ]
+$modules = [
+    ['How the Web Works', 'Orientation before any code is written.', [
+        ['The request/response cycle', 'text', 15, 1, "Every page you open starts with your browser sending an HTTP request to a server.\n\nThe server replies with a response: a status code, some headers, and usually a body of HTML. Understanding this exchange is the foundation for everything else in this course."],
+        ['Anatomy of a URL', 'text', 10, 0, "A URL has parts, and each one tells the browser something different: scheme, host, path, query string and fragment.\n\nKnowing which part does what makes debugging far quicker."],
+    ]],
+    ['HTML & CSS', 'Structure first, then presentation.', [
+        ['Semantic HTML', 'text', 25, 0, "HTML describes what content *is*, not what it looks like.\n\nUsing a heading because it is a heading — rather than because it renders large — is what makes a page work with screen readers and search engines."],
+        ['Layout with Flexbox', 'text', 30, 0, "Flexbox lays out items along a single axis and handles the spacing between them.\n\nIt replaced a decade of float-based hacks and is still the right tool for most one-dimensional layouts."],
+    ]],
+    ['JavaScript Basics', 'Making a page respond.', [
+        ['Variables and types', 'text', 20, 0, "JavaScript has a small set of primitive types and one very flexible object type.\n\nMost early confusion comes from not knowing which one you are holding."],
+        ['Listening for events', 'text', 25, 0, "An event listener runs your function when something happens — a click, a keypress, a form submission.\n\nThis is where a static page becomes an application."],
+    ]],
+];
+foreach ($modules as $mi => [$mTitle, $mSummary, $lessons]) {
+    insertIgnore($pdo, 'INSERT IGNORE INTO modules (course_id, title, summary, sort_order) VALUES (:c,:t,:s,:o)', [
+        'c' => $courseId, 't' => $mTitle, 's' => $mSummary, 'o' => $mi,
+    ]);
+    $mStmt = $pdo->prepare('SELECT id FROM modules WHERE course_id = :c AND title = :t');
+    $mStmt->execute(['c' => $courseId, 't' => $mTitle]);
+    $moduleId = (int) $mStmt->fetchColumn();
+
+    foreach ($lessons as $li => [$lTitle, $lType, $lMin, $lPreview, $lBody]) {
+        $exists = $pdo->prepare('SELECT id FROM lessons WHERE module_id = :m AND title = :t');
+        $exists->execute(['m' => $moduleId, 't' => $lTitle]);
+        if ($exists->fetchColumn() === false) {
+            insertIgnore($pdo, 'INSERT INTO lessons (module_id, title, content_type, body, duration_minutes, sort_order, is_preview)
+                VALUES (:m,:t,:ct,:b,:d,:o,:p)', [
+                'm' => $moduleId, 't' => $lTitle, 'ct' => $lType, 'b' => $lBody,
+                'd' => $lMin, 'o' => $li, 'p' => $lPreview,
+            ]);
+        }
+    }
+}
+insertIgnore($pdo, 'UPDATE courses c SET c.estimated_minutes = (
+    SELECT COALESCE(SUM(l.duration_minutes),0) FROM lessons l JOIN modules m ON m.id = l.module_id WHERE m.course_id = c.id
+) WHERE c.id = :c', ['c' => $courseId]);
+
+$aExists = $pdo->prepare('SELECT id FROM assignments WHERE course_id = :c AND title = :t');
+$aExists->execute(['c' => $courseId, 't' => 'Build a personal profile page']);
+if ($aExists->fetchColumn() === false) {
+    insertIgnore($pdo, "INSERT INTO assignments (course_id, title, instructions, due_at, max_score, allows_file, allows_text, allows_resubmission, status)
+        VALUES (:c,:t,:i,:due,100,1,1,1,'published')", [
+        'c' => $courseId,
+        't' => 'Build a personal profile page',
+        'i' => 'Build a single HTML page about yourself using semantic markup and a Flexbox layout. Attach your .zip, or paste your HTML in the text box.',
+        'due' => date('Y-m-d H:i:s', strtotime('+2 weeks')),
     ]);
 }
 

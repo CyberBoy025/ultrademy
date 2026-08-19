@@ -21,6 +21,7 @@ is written until this is signed off.
 | 10 | [Phase 5 — Centres & Operations](10-centres-operations.md) | 9, 12–17, 21–22 |
 | 11 | [Phase 6 — Subscriptions & Entitlements](11-subscriptions-entitlements.md) | 6, 7 |
 | 12 | [Phase 7 — Applications & Students](12-applications-students.md) | 10, 11, 14, 34 |
+| 13 | [Phase 8 — LMS](13-lms.md) | 18, 19, 20, 23 |
 
 Design system and UI decomposition live one level up in `docs/`.
 
@@ -178,4 +179,11 @@ automatically.
 > must use a vhost whose DocumentRoot is `.../ultra/public`. See
 > [12-applications-students.md](12-applications-students.md) §6 and §8.
 
-Next up per the revised roadmap (§80): **Phase 8 — LMS**.
+Phase 8 (LMS — [13](13-lms.md)) builds the content chain from README §18: courses,
+modules, lessons, materials, progress, assignments, grading and certificates, including
+public certificate verification (Decision 5). **Assessments/quizzes are deliberately not
+in it** — see [13-lms.md](13-lms.md) §7 for why they were separated rather than rushed.
+
+Next up per the revised roadmap (§80): **Phase 9 — Finance & Payments**, which is where
+Decisions 17–21 become blocking, and which also unblocks two manual bridges already in
+place (subscription activation, and enrolment `pending_payment` → `active`).

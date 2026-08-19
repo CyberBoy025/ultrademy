@@ -2,12 +2,13 @@
 
 **Unified Student, Training, Subscription & Company Management Platform**
 
-> **Status:** Phase 7 — Applications & Students. Phases 2–3 (public website, UI/UX design
-> system) are UX/visual builds; **Phases 4–7 are real, running production code** — a MySQL
+> **Status:** Phase 8 — LMS. Phases 2–3 (public website, UI/UX design
+> system) are UX/visual builds; **Phases 4–8 are real, running production code** — a MySQL
 > database, session auth enforcing centre-scoped permissions, CRUD for centres,
 > programmes, cohorts, timetabling and attendance, a package/entitlement engine in which
-> no code names a package, and the full applicant → admitted → student journey on one
-> account. See `docs/architecture/09-` through `12-`. See [Working notes](#working-notes)
+> no code names a package, the full applicant → admitted → student journey on one account, and an LMS with
+> courses, progress, assignments, grading and verifiable certificates. See
+> `docs/architecture/09-` through `13-`. See [Working notes](#working-notes)
 > at the end for local setup, demo logins and repo workflow.
 >
 > **Before any production deployment:** point the web server's DocumentRoot at
@@ -1548,6 +1549,8 @@ Light and dark themes are both first-class. Theme is a token swap driven by
   registry, entitlement resolution, subscription lifecycle
 - `docs/architecture/12-applications-students.md` — Phase 7: applications, document
   handling, admission, enrolment, transfers
+- `docs/architecture/13-lms.md` — Phase 8: courses, lessons, materials, progress,
+  assignments, grading, certificates (assessments deferred — see §7)
 
 ### Current scaffold
 
@@ -1558,9 +1561,11 @@ app/
   views/         page templates
 config/          app + database configuration
 storage/
-  app/documents/ uploaded application documents — PII, outside the web root, gitignored
+  app/documents/   application documents — PII, outside the web root, gitignored
+  app/materials/   course materials
+  app/submissions/ assignment submissions
 database/
-  migrations/    schema changes, in order (30 files as of Phase 7)
+  migrations/    schema changes, in order (40 files as of Phase 8)
   migrate.php    runner — applies new migrations, tracked in a `migrations` table
   seed.php       dev/demo data — roles, permissions, centres, users, programmes,
                  packages and the feature matrix. Idempotent; safe to re-run.

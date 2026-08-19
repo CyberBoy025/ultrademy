@@ -31,6 +31,28 @@ final class Nav
             ];
         }
 
+        // Learners see My Learning once they have any course; staff manage the catalogue.
+        if (!Auth::isStaff()) {
+            $items[] = [
+                'key' => 'learn', 'label' => 'My Learning', 'href' => 'app.php?r=learn',
+                'icon' => '<path d="M4 5.5A1.5 1.5 0 015.5 4H11v16H5.5A1.5 1.5 0 014 18.5z"/><path d="M20 5.5A1.5 1.5 0 0018.5 4H13v16h5.5a1.5 1.5 0 001.5-1.5z"/>',
+            ];
+        }
+
+        if (Auth::can('education.lesson.view')) {
+            $items[] = [
+                'key' => 'courses', 'label' => 'Courses', 'href' => 'app.php?r=courses',
+                'icon' => '<path d="M4 5.5A1.5 1.5 0 015.5 4H11v16H5.5A1.5 1.5 0 014 18.5z"/><path d="M20 5.5A1.5 1.5 0 0018.5 4H13v16h5.5a1.5 1.5 0 001.5-1.5z"/>',
+            ];
+        }
+
+        if (Auth::can('education.assignment.grade')) {
+            $items[] = [
+                'key' => 'grading', 'label' => 'Grading', 'href' => 'app.php?r=grading',
+                'icon' => '<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M9 15l2 2 4-4"/>',
+            ];
+        }
+
         // Applicants and students track their own applications; staff get the review queue
         // instead. Someone who is both sees both, which is the point of one account holding
         // several relationships (README §3).
