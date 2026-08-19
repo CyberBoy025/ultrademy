@@ -2,15 +2,20 @@
 
 **Unified Student, Training, Subscription & Company Management Platform**
 
-> **Status:** Phase 9 — Finance & Payments. Phases 2–3 (public website, UI/UX design
-> system) are UX/visual builds; **Phases 4–9 are real, running production code** — a MySQL
-> database, session auth enforcing centre-scoped permissions, CRUD for centres,
-> programmes, cohorts, timetabling and attendance, a package/entitlement engine in which
-> no code names a package, the full applicant → admitted → student journey on one account, and an LMS with
-> courses, progress, assignments, grading and verifiable certificates, and a finance module
-> with invoices, gateways, manual-transfer verification, receipts, refunds and reports.
-> See `docs/architecture/09-` through `14-`. See [Working notes](#working-notes)
-> at the end for local setup, demo logins and repo workflow.
+> **Status:** Phase 11 — Careers Portal & Recruitment. Phases 2–3 (public website, UI/UX
+> design system) are UX/visual builds; **Phases 4–11 are real, running production code**:
+>
+> - a MySQL database (80 migrations) and session auth enforcing centre-scoped permissions
+> - centres, programmes, cohorts, timetabling and attendance
+> - a package/entitlement engine in which no code ever names a package
+> - the full applicant → admitted → student journey on **one** account
+> - an LMS with progress, assignments, grading and publicly verifiable certificates
+> - finance: invoices, gateways, manual-transfer verification, receipts, refunds, reports
+> - a notification engine with chat, groups, announcements and moderation
+> - a public careers portal and recruitment back office, on its own session and roles
+>
+> See `docs/architecture/09-` through `16-`, and [Working notes](#working-notes) at the end
+> for local setup, demo logins and repo workflow.
 >
 > **Before any production deployment:** point the web server's DocumentRoot at
 > `ultra/public`. Serving the project folder directly exposes `.env` and uploaded
@@ -1554,6 +1559,10 @@ Light and dark themes are both first-class. Theme is a token swap driven by
   assignments, grading, certificates (assessments deferred — see §7)
 - `docs/architecture/14-finance-payments.md` — Phase 9: invoices, payment gateways,
   manual transfer verification, receipts, refunds, expenses, reports, reconciliation
+- `docs/architecture/15-communication.md` — Phase 10: notification engine, chat,
+  groups, announcements, moderation
+- `docs/architecture/16-careers-portal.md` — Phase 11: public careers site, recruitment
+  back office, separate session and roles
 
 ### Current scaffold
 
@@ -1569,7 +1578,7 @@ storage/
   app/submissions/ assignment submissions
   app/proofs/      proof-of-payment uploads
 database/
-  migrations/    schema changes, in order (51 files as of Phase 9)
+  migrations/    schema changes, in order (80 files as of Phase 11)
   migrate.php    runner — applies new migrations, tracked in a `migrations` table
   seed.php       dev/demo data — roles, permissions, centres, users, programmes,
                  packages and the feature matrix. Idempotent; safe to re-run.

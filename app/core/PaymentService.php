@@ -244,6 +244,10 @@ final class PaymentService
             Audit::log('payment.verified', 'payments', $paymentId,
                 ['status' => 'pending_verification'], ['status' => 'successful', 'note' => $note],
                 $payment['centre_id'] !== null ? (int) $payment['centre_id'] : null);
+            Notify::send((int) $payment['user_id'], 'payment.verified', 'payment',
+                'Payment confirmed',
+                'We have confirmed your transfer of ' . Money::format((int) $payment['amount'], $payment['currency']) . '.',
+                'app.php?r=payments.show&id=' . $paymentId);
         } else {
             Database::query(
                 "UPDATE payments SET status = 'failed', failure_reason = :r, verified_by = :by, verified_at = NOW()
@@ -253,6 +257,10 @@ final class PaymentService
             Audit::log('payment.rejected', 'payments', $paymentId,
                 ['status' => 'pending_verification'], ['status' => 'failed', 'reason' => $note],
                 $payment['centre_id'] !== null ? (int) $payment['centre_id'] : null);
+            Notify::send((int) $payment['user_id'], 'payment.rejected', 'payment',
+                'We could not confirm your payment',
+                $note !== '' ? $note : 'Finance could not match your transfer. Please check the reference and contact us.',
+                'app.php?r=payments.show&id=' . $paymentId);
         }
         return '';
     }
@@ -429,6 +437,14 @@ final class PaymentService
 
         if ($status === 'paid') {
             self::fulfil($invoiceId);
+
+            $invoice = Invoice::find($invoiceId);
+            if ($invoice) {
+                Notify::send((int) $invoice['user_id'], 'invoice.paid', 'payment',
+                    'Invoice ' . $invoice['number'] . ' is paid',
+                    'Thank you — ' . Money::format((int) $invoice['total_amount'], $invoice['currency']) . ' received in full.',
+                    'app.php?r=invoices.show&id=' . $invoiceId);
+            }
         }
     }
 

@@ -28,4 +28,14 @@ final class View
         $noRail = $rail === null;
         require dirname(__DIR__) . '/views/layout/shell.php';
     }
+
+    /**
+     * Careers portal page — its own header/footer/nav, deliberately not the LMS shell
+     * (docs/architecture/16-careers-portal.md §3). $description feeds the SEO meta tag
+     * (brief §43); pass '' on pages that don't need one (e.g. the applicant dashboard).
+     */
+    public static function careersShell(string $active, string $title, string $main, string $description = ''): void
+    {
+        require dirname(__DIR__) . '/views/layout/careers.php';
+    }
 }

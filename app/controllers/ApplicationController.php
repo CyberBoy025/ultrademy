@@ -69,6 +69,27 @@ final class ApplicationController
         Audit::log('application.submitted', 'applications', $id, null, [
             'programme_id' => $programmeId, 'reference' => $app['reference'],
         ], $centreId);
+
+        // §37 trigger table: the applicant, and the manager of the centre they chose.
+        Notify::send($userId, 'application.submitted', 'admission',
+            'Application ' . $app['reference'] . ' submitted',
+            'We have your application for ' . $app['programme_title'] . '. You will hear from us once it is reviewed.',
+            'app.php?r=applications.show&id=' . $id);
+
+        if ($centreId !== null) {
+            $managers = Database::all(
+                'SELECT manager_user_id FROM centres WHERE id = :c AND manager_user_id IS NOT NULL',
+                ['c' => $centreId]
+            );
+            Notify::sendMany(
+                array_map('intval', array_column($managers, 'manager_user_id')),
+                'application.received', 'admission',
+                'New application for ' . $app['programme_title'],
+                ($app['applicant_name'] ?: $app['email']) . ' applied to your centre.',
+                'app.php?r=applications.show&id=' . $id
+            );
+        }
+
         Session::flash('success', "Application {$app['reference']} submitted.");
         header('Location: app.php?r=applications.show&id=' . $id);
         exit;
@@ -204,6 +225,17 @@ final class ApplicationController
             'status' => $decision, 'cohort_id' => $cohortId,
         ], $app['preferred_centre_id'] ? (int) $app['preferred_centre_id'] : null);
 
+        // `admission` is a locked category — an applicant can never switch off the
+        // message that tells them the outcome.
+        Notify::send((int) $app['user_id'], 'application.' . $decision, 'admission',
+            $decision === 'approved'
+                ? 'Your application was approved'
+                : 'Your application was not successful',
+            $decision === 'approved'
+                ? 'Congratulations — your application for ' . $app['programme_title'] . ' has been approved.'
+                : ($note !== '' ? $note : 'Thank you for applying for ' . $app['programme_title'] . '.'),
+            'app.php?r=applications.show&id=' . $id);
+
         Session::flash('success', $decision === 'approved' ? 'Approved. You can now admit the applicant.' : 'Application rejected.');
         header('Location: app.php?r=applications.show&id=' . $id);
         exit;
@@ -240,6 +272,11 @@ final class ApplicationController
         Audit::log('enrolment.created', 'enrolments', $enrolmentId, null, [
             'application_id' => $id, 'student_no' => $enrolment['student_no'],
         ], $enrolment['centre_id'] ? (int) $enrolment['centre_id'] : null);
+
+        Notify::send((int) $app['user_id'], 'enrolment.created', 'admission',
+            'You are enrolled — ' . $enrolment['student_no'],
+            'You have been admitted to ' . $app['programme_title'] . '. Your place is held pending payment.',
+            'app.php?r=myapplications');
 
         Session::flash('success', "Admitted as {$enrolment['student_no']} — awaiting payment.");
         header('Location: app.php?r=applications.show&id=' . $id);

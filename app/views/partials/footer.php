@@ -30,6 +30,7 @@
         <ul>
           <li><a href="about.php">About</a></li>
           <li><a href="contact.php">Contact</a></li>
+          <li><a href="<?= View::e(careers_url('')) ?>">Careers</a></li>
           <li><a href="index.php#affiliate">Affiliate Programme</a></li>
           <li><a href="index.php#faq">FAQ</a></li>
         </ul>

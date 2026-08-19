@@ -39,6 +39,10 @@ $errorMsg   = Session::flash('error');
       <a href="<?= View::e($item['href']) ?>" <?= $item['key'] === $active ? 'aria-current="page"' : '' ?>>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><?= $item['icon'] ?></svg>
         <span><?= View::e($item['label']) ?></span>
+        <?php if (!empty($item['badge'])): ?>
+          <span class="badge"><?= (int) $item['badge'] ?></span>
+          <span class="sr-only">unread</span>
+        <?php endif; ?>
       </a>
       <?php endforeach; ?>
     </nav>

@@ -7,7 +7,7 @@
 <title>Upgrade Required — UltrAdemy</title>
 <meta name="robots" content="noindex">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/ultra/public/css/shell.css">
+<link rel="stylesheet" href="<?= View::e(app_url('css/shell.css')) ?>">
 <script>(function(){try{var t=localStorage.getItem('ultrademy.theme');document.documentElement.setAttribute('data-theme',t==='dark'?'dark':'light');}catch(e){}})();</script>
 </head>
 <body>
@@ -24,8 +24,8 @@
       <p class="cap" style="margin-bottom:22px"><strong><?= View::e($featureName) ?></strong> isn't included in your current package.</p>
     <?php endif; ?>
     <div style="display:flex;flex-direction:column;gap:10px">
-      <a class="btn primary" href="/ultra/public/app.php?r=subscription">View Packages</a>
-      <a class="btn" href="/ultra/public/app.php">Back to Dashboard</a>
+      <a class="btn primary" href="<?= View::e(app_url('app.php?r=subscription')) ?>">View Packages</a>
+      <a class="btn" href="<?= View::e(app_url('app.php')) ?>">Back to Dashboard</a>
     </div>
   </div>
 </div>

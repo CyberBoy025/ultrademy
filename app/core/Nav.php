@@ -31,6 +31,33 @@ final class Nav
             ];
         }
 
+        // Notifications are for everyone; the badge is the unread count.
+        $unread = Notify::unreadCount();
+        $notif = [
+            'key' => 'notifications', 'label' => 'Notifications', 'href' => 'app.php?r=notifications',
+            'icon' => '<path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/>',
+        ];
+        if ($unread > 0) {
+            $notif['badge'] = $unread;
+        }
+        $items[] = $notif;
+
+        // Messaging is entitlement-gated — the link disappears when the package excludes
+        // it. The controller is the real gate (04-subscriptions §6).
+        if (Entitlements::can('chat_direct') || Entitlements::can('chat_groups')) {
+            $items[] = [
+                'key' => 'chat', 'label' => 'Messages', 'href' => 'app.php?r=chat',
+                'icon' => '<path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>',
+            ];
+        }
+
+        if (Auth::can('comms.announcement.publish')) {
+            $items[] = [
+                'key' => 'announcements', 'label' => 'Announcements', 'href' => 'app.php?r=announcements',
+                'icon' => '<path d="M3 11v2a1 1 0 001 1h3l4 4V6L7 10H4a1 1 0 00-1 1z"/><path d="M16 8a5 5 0 010 8"/>',
+            ];
+        }
+
         // Learners see My Learning once they have any course; staff manage the catalogue.
         if (!Auth::isStaff()) {
             $items[] = [
@@ -67,6 +94,33 @@ final class Nav
             $items[] = [
                 'key' => 'applications', 'label' => 'Applications', 'href' => 'app.php?r=applications',
                 'icon' => '<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/>',
+            ];
+        }
+
+        // Recruitment — job.manage lands on Jobs, application.view_any-only (recruiter) lands
+        // on the pipeline; RecruitmentAdminController::index() picks the right one.
+        if (Auth::can('recruitment.job.manage') || Auth::can('recruitment.application.view_any')) {
+            $items[] = [
+                'key' => 'recruitment', 'label' => 'Recruitment', 'href' => 'app.php?r=recruitment',
+                'icon' => '<path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>',
+            ];
+        }
+        if (Auth::can('recruitment.email_template.manage')) {
+            $items[] = [
+                'key' => 'recruitmentemail', 'label' => 'Recruitment Email', 'href' => 'app.php?r=recruitment.emailtemplates',
+                'icon' => '<path d="M4 4h16v16H4z"/><path d="m22 6-10 7L2 6"/>',
+            ];
+        }
+        if (Auth::can('recruitment.report.view')) {
+            $items[] = [
+                'key' => 'recruitmentreports', 'label' => 'Recruitment Reports', 'href' => 'app.php?r=recruitment.reports',
+                'icon' => '<path d="M3 3v18h18"/><rect x="7" y="10" width="3" height="8"/><rect x="13" y="6" width="3" height="12"/>',
+            ];
+        }
+        if (Auth::can('recruitment.interview.feedback')) {
+            $items[] = [
+                'key' => 'recruitmentinterviews', 'label' => 'My Interviews', 'href' => 'app.php?r=recruitment.interviews.mine',
+                'icon' => '<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
             ];
         }
 

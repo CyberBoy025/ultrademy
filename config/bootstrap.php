@@ -37,6 +37,13 @@ $GLOBALS['ultrademy_config'] = [
         'url'   => env('APP_URL', 'http://localhost'),
         'root'  => $root,
     ],
+    // Deliberately separate from app.url (docs/architecture/16-careers-portal.md §14) — the
+    // careers portal is a second front controller with its own base URL, whether that's
+    // still a path under the main app (path-based v1) or a real subdomain post-cutover.
+    // Nothing in code should ever hard-code which of those two this currently is.
+    'careers' => [
+        'url' => env('CAREERS_URL', 'http://localhost/ultra/public/careers'),
+    ],
     'db' => [
         'host'    => env('DB_HOST', '127.0.0.1'),
         'port'    => (int) env('DB_PORT', 3306),
@@ -58,6 +65,23 @@ function config(string $path, mixed $default = null): mixed
         $value = $value[$segment];
     }
     return $value;
+}
+
+/**
+ * Absolute URL into the MAIN app, built from app.url — never hard-code "/ultra/public/..."
+ * (docs/architecture/16-careers-portal.md §14: that prefix disappears the moment this runs
+ * behind a real vhost). Only for cross-app links; same-app pages should stay relative,
+ * exactly like shell.php's own "css/shell.css" already does.
+ */
+function app_url(string $path = ''): string
+{
+    return rtrim((string) config('app.url'), '/') . '/' . ltrim($path, '/');
+}
+
+/** Same as app_url(), but into the careers portal — see the `careers.url` config entry above. */
+function careers_url(string $path = ''): string
+{
+    return rtrim((string) config('careers.url'), '/') . '/' . ltrim($path, '/');
 }
 
 // --- error reporting -----------------------------------------------------

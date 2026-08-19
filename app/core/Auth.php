@@ -238,7 +238,7 @@ final class Auth
     public static function requireLogin(): void
     {
         if (!self::check()) {
-            header('Location: /ultra/public/login.php');
+            header('Location: ' . app_url('login.php'));
             exit;
         }
     }

@@ -1,0 +1,10 @@
+CREATE TABLE IF NOT EXISTS interview_panelists (
+    id            BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    interview_id  BIGINT UNSIGNED NOT NULL,
+    user_id       BIGINT UNSIGNED NOT NULL,
+    panel_role    VARCHAR(60) NULL COMMENT 'e.g. lead, technical, HR',
+    created_at    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uq_interview_panelists (interview_id, user_id),
+    CONSTRAINT fk_interview_panelists_interview FOREIGN KEY (interview_id) REFERENCES interviews(id) ON DELETE CASCADE,
+    CONSTRAINT fk_interview_panelists_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

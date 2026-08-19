@@ -28,9 +28,15 @@ foreach ($expired as $row) {
         ['status' => 'active'],
         ['status' => $row['cancelled_at'] !== null ? 'cancelled' : 'expired']
     );
-    // TODO (Phase 10 — Communication): fire the expiry notification here. The
-    // notifications table does not exist yet, so nothing is queued rather than
-    // pretending a message was sent.
+    // Phase 10 closed this TODO: the subscriber is now actually told.
+    Notify::send(
+        (int) $row['user_id'],
+        $row['cancelled_at'] !== null ? 'subscription.ended' : 'subscription.expired',
+        'payment',
+        $row['cancelled_at'] !== null ? 'Your subscription has ended' : 'Your subscription has expired',
+        'Features included in your package are no longer available. Your data is untouched and returns on renewal.',
+        'app.php?r=subscription'
+    );
 }
 
 printf(

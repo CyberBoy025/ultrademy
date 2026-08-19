@@ -45,6 +45,15 @@ $roles = [
     ['student', 'Student', 0],
     ['applicant', 'Applicant', 0],
     ['affiliate', 'Affiliate', 0],
+    // Recruitment (docs/architecture/16-careers-portal.md §8) — `job_applicant` is
+    // deliberately distinct from `applicant` above, which already means "programme
+    // applicant". `recruiter` is centre-scopable like centre_manager/cashier/instructor;
+    // the others are global.
+    ['job_applicant', 'Job Applicant', 0],
+    ['recruitment_admin', 'Recruitment Administrator', 0],
+    ['recruiter', 'Recruiter', 1],
+    ['interviewer', 'Interviewer', 0],
+    ['reporting_user', 'Reporting User', 0],
 ];
 foreach ($roles as [$code, $name, $scopable]) {
     insertIgnore($pdo, 'INSERT IGNORE INTO roles (code, name, is_scopable) VALUES (:c,:n,:s)', ['c' => $code, 'n' => $name, 's' => $scopable]);
@@ -91,6 +100,20 @@ $permissions = [
     ['finance.expense.approve', 'finance'],
     ['finance.report.view', 'finance'],
     ['finance.reconciliation.run', 'finance'],
+    ['comms.conversation.moderate', 'comms'],
+    ['comms.announcement.publish', 'comms'],
+    // Recruitment (docs/architecture/16-careers-portal.md §8). `application.decide` is
+    // kept separate from `.review`, mirroring admissions' "approve is never implied by
+    // review" rule (03-rbac.md §3).
+    ['recruitment.job.manage', 'recruitment'],
+    ['recruitment.application.view_any', 'recruitment'],
+    ['recruitment.application.review', 'recruitment'],
+    ['recruitment.application.decide', 'recruitment'],
+    ['recruitment.interview.manage', 'recruitment'],
+    ['recruitment.interview.feedback', 'recruitment'],
+    ['recruitment.note.manage', 'recruitment'],
+    ['recruitment.report.view', 'recruitment'],
+    ['recruitment.email_template.manage', 'recruitment'],
 ];
 foreach ($permissions as [$code, $module]) {
     insertIgnore($pdo, 'INSERT IGNORE INTO permissions (code, module) VALUES (:c,:m)', ['c' => $code, 'm' => $module]);
@@ -112,6 +135,7 @@ $grants = [
         // §8: management approves refunds and expenses; it does not raise them.
         'finance.invoice.view_any', 'finance.refund.approve',
         'finance.expense.approve', 'finance.report.view',
+        'comms.announcement.publish',
     ],
     'administrator' => [
         'identity.user.view_any', 'identity.user.create', 'identity.user.update', 'identity.user.suspend',
@@ -125,6 +149,7 @@ $grants = [
         'admissions.application.reject', 'admissions.enrolment.create',
         'education.course.create', 'education.course.update', 'education.lesson.view',
         'education.certificate.issue',
+        'comms.conversation.moderate', 'comms.announcement.publish',
     ],
     'centre_manager' => [
         'identity.user.view_any', 'staff.member.view_any',
@@ -175,6 +200,28 @@ $grants = [
     // Ownership-scoped: the controller constrains these to the applicant's own records.
     'applicant' => ['education.programme.view_any', 'admissions.application.view_any'],
     'affiliate' => ['education.programme.view_any'],
+    // Recruitment. `job_applicant` gets no permission grant at all — the careers portal's
+    // applicant-side routes never call Auth::requirePermission(), only ownership checks
+    // (Fig. 3 of 16-careers-portal.md), so there is nothing to grant.
+    'job_applicant' => [],
+    'recruitment_admin' => [
+        'recruitment.job.manage', 'recruitment.application.view_any',
+        'recruitment.application.review', 'recruitment.application.decide',
+        'recruitment.interview.manage', 'recruitment.note.manage',
+        'recruitment.report.view', 'recruitment.email_template.manage',
+    ],
+    'recruiter' => [
+        'recruitment.application.view_any', 'recruitment.application.review',
+        'recruitment.note.manage', 'recruitment.interview.manage',
+        // A recruiter is a valid panelist candidate (InterviewController::store()'s
+        // panelist query includes the role) — they need the feedback permission too,
+        // or they could be assigned to a panel and then blocked from using it.
+        'recruitment.interview.feedback',
+    ],
+    // Sees only interviews they are assigned to (ownership-scoped in InterviewController),
+    // not a broad view_any — this is the only permission an interviewer needs.
+    'interviewer' => ['recruitment.interview.feedback'],
+    'reporting_user' => ['recruitment.report.view'],
 ];
 foreach ($grants as $roleCode => $permCodes) {
     $roleId = idBy($pdo, 'roles', 'code', $roleCode);
@@ -491,11 +538,106 @@ $settings = [
     ['paystack_secret_key', json_encode(''), 'finance', 0],
     ['flutterwave_secret_key', json_encode(''), 'finance', 0],
     ['flutterwave_webhook_hash', json_encode(''), 'finance', 0],
+    // Same convention as the gateway credentials above — empty provider = CAPTCHA is
+    // simply not enforced (Captcha::isEnabled()), and an admin can turn it on later
+    // without a deploy. Provider was an explicit open decision in the original
+    // architecture report; value is one of: turnstile, recaptcha, hcaptcha.
+    ['captcha_provider', json_encode(''), 'security', 0],
+    ['captcha_site_key', json_encode(''), 'security', 0],
+    ['captcha_secret_key', json_encode(''), 'security', 0],
 ];
 foreach ($settings as [$key, $value, $group, $public]) {
     insertIgnore($pdo, 'INSERT IGNORE INTO settings (`key`, value, `group`, is_public) VALUES (:k,:v,:g,:p)', [
         'k' => $key, 'v' => $value, 'g' => $group, 'p' => $public,
     ]);
+}
+
+echo "Seeding recruitment demo users...\n";
+foreach ([
+    ['ngozi.eze@ultrademy.com', 'Ngozi', 'Eze', 'recruitment_admin', null],
+    ['femi.okoro@ultrademy.com', 'Femi', 'Okoro', 'recruiter', $gwgId],
+    ['bola.adeleke@ultrademy.com', 'Bola', 'Adeleke', 'reporting_user', null],
+] as [$email, $first, $last, $roleCode, $centreId]) {
+    insertIgnore($pdo, 'INSERT IGNORE INTO users (email, password_hash, status, email_verified_at) VALUES (:e,:h,:s,NOW())', [
+        'e' => $email, 'h' => $hash, 's' => 'active',
+    ]);
+    $uid = idBy($pdo, 'users', 'email', $email);
+    insertIgnore($pdo, 'INSERT IGNORE INTO user_profiles (user_id, first_name, last_name) VALUES (:u,:f,:l)', [
+        'u' => $uid, 'f' => $first, 'l' => $last,
+    ]);
+    $roleId = idBy($pdo, 'roles', 'code', $roleCode);
+    insertIgnore($pdo, 'INSERT IGNORE INTO user_roles (user_id, role_id, centre_id) VALUES (:u,:r,:c)', [
+        'u' => $uid, 'r' => $roleId, 'c' => $centreId,
+    ]);
+    if ($centreId !== null) {
+        insertIgnore($pdo, 'INSERT IGNORE INTO staff_centres (user_id, centre_id, is_primary) VALUES (:u,:c,1)', ['u' => $uid, 'c' => $centreId]);
+    }
+}
+
+echo "Seeding recruitment departments and categories...\n";
+foreach ([['Technology', 'technology'], ['Training & Education', 'training-education'], ['Centre Operations', 'centre-operations'], ['Administration', 'administration']] as [$n, $s]) {
+    insertIgnore($pdo, 'INSERT IGNORE INTO departments (name, slug) VALUES (:n,:s)', ['n' => $n, 's' => $s]);
+}
+foreach ([['Software Development', 'software-development'], ['Instruction', 'instruction'], ['Front Desk', 'front-desk'], ['IT Support', 'it-support']] as [$n, $s]) {
+    insertIgnore($pdo, 'INSERT IGNORE INTO job_categories (name, slug) VALUES (:n,:s)', ['n' => $n, 's' => $s]);
+}
+
+echo "Seeding demo job postings (careers.ultrademy.com)...\n";
+$deptTech = idBy($pdo, 'departments', 'slug', 'technology');
+$deptTraining = idBy($pdo, 'departments', 'slug', 'training-education');
+$deptOps = idBy($pdo, 'departments', 'slug', 'centre-operations');
+$catDev = idBy($pdo, 'job_categories', 'slug', 'software-development');
+$catInstr = idBy($pdo, 'job_categories', 'slug', 'instruction');
+$catFrontDesk = idBy($pdo, 'job_categories', 'slug', 'front-desk');
+$recruitmentAdminId = idBy($pdo, 'users', 'email', 'ngozi.eze@ultrademy.com');
+
+$jobs = [
+    // [title, slug, dept, cat, employment_type, work_mode, location_type, location_label, centre codes[], deadline_days, status]
+    ['Full-Stack Developer', 'full-stack-developer', $deptTech, $catDev, 'full_time', 'hybrid', 'centre', null, ['GWG'], 30, 'published'],
+    ['Web Development Instructor', 'web-development-instructor', $deptTraining, $catInstr, 'full_time', 'onsite', 'centre', null, ['KBW'], 21, 'published'],
+    ['Remote Data Analysis Instructor', 'remote-data-analysis-instructor', $deptTraining, $catInstr, 'part_time', 'remote', 'remote', 'Remote', [], 45, 'published'],
+    ['Front Desk Officer', 'front-desk-officer', $deptOps, $catFrontDesk, 'full_time', 'onsite', 'multiple_centres', 'Gwagwalada Hub & Kubwa Hub', ['GWG', 'KBW'], 14, 'published'],
+    ['IT Support Intern', 'it-support-intern', $deptTech, $catDev, 'internship', 'onsite', 'centre', null, ['GWG'], 10, 'published'],
+    ['Digital Marketing Assistant', 'digital-marketing-assistant', $deptOps, null, 'contract', 'hybrid', 'centre', null, ['KBW'], -5, 'closed'],
+];
+foreach ($jobs as [$title, $slug, $deptId, $catId, $empType, $mode, $locType, $locLabel, $centreCodes, $deadlineDays, $status]) {
+    insertIgnore($pdo, 'INSERT IGNORE INTO job_postings
+        (title, slug, department_id, category_id, employment_type, work_mode, location_type, location_label,
+         summary, responsibilities, requirements, qualifications, skills, experience_requirements,
+         application_deadline, status, published_at, created_by)
+        VALUES (:title,:slug,:dept,:cat,:emp,:mode,:loct,:locl,:summ,:resp,:req,:qual,:skills,:exp,:deadline,:status,
+                CASE WHEN :status2 = \'published\' THEN NOW() ELSE NULL END, :by)', [
+        'title' => $title, 'slug' => $slug, 'dept' => $deptId, 'cat' => $catId,
+        'emp' => $empType, 'mode' => $mode, 'loct' => $locType, 'locl' => $locLabel,
+        'summ' => "Join UltrAdemy as a $title and help us grow our reach across technology, training and operations.",
+        'resp' => "Deliver excellent work as a $title.\nCollaborate with the wider UltrAdemy team.\nUphold UltrAdemy's standards of quality and care.",
+        'req' => "Relevant experience for a $title role.\nStrong communication skills.\nAbility to work both independently and in a team.",
+        'qual' => 'A relevant qualification or equivalent practical experience.',
+        'skills' => 'Communication, problem-solving, attention to detail.',
+        'exp' => '1-3 years in a related role, depending on seniority.',
+        'deadline' => date('Y-m-d H:i:s', strtotime("+$deadlineDays days")),
+        'status' => $status, 'status2' => $status, 'by' => $recruitmentAdminId,
+    ]);
+    $postingId = idBy($pdo, 'job_postings', 'slug', $slug);
+    foreach ($centreCodes as $cc) {
+        insertIgnore($pdo, 'INSERT IGNORE INTO job_posting_centres (job_posting_id, centre_id) VALUES (:p,:c)', [
+            'p' => $postingId, 'c' => idBy($pdo, 'centres', 'code', $cc),
+        ]);
+    }
+}
+// One posting gets a couple of application questions, to exercise the question-builder path.
+$fsdId = idBy($pdo, 'job_postings', 'slug', 'full-stack-developer');
+foreach ([
+    ['Why are you interested in this position?', 'long_text', 1, 0],
+    ['How many years of professional PHP or JavaScript experience do you have?', 'number', 1, 1],
+] as [$label, $type, $required, $sort]) {
+    $exists = $pdo->prepare('SELECT id FROM job_questions WHERE job_posting_id = :p AND label = :l');
+    $exists->execute(['p' => $fsdId, 'l' => $label]);
+    if ($exists->fetchColumn() === false) {
+        insertIgnore($pdo, 'INSERT INTO job_questions (job_posting_id, label, type, is_required, sort_order) VALUES (:p,:l,:t,:r,:s)', [
+            'p' => $fsdId, 'l' => $label, 't' => $type, 'r' => $required, 's' => $sort,
+        ]);
+    }
 }
 
 echo "\nDone.\n";

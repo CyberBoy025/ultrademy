@@ -90,6 +90,26 @@ match ($route) {
     'materials.download' => LearnController::downloadMaterial(),
     'submissions.download' => LearnController::downloadSubmission(),
 
+    'chat'            => ChatController::index(),
+    'chat.show'       => ChatController::show(),
+    'chat.direct'     => ChatController::startDirect(),
+    'chat.group'      => ChatController::createGroup(),
+    'chat.cohort'     => ChatController::cohortGroup(),
+    'chat.post'       => ChatController::post(),
+    'chat.attachment' => ChatController::downloadAttachment(),
+    'chat.moderate'   => ChatController::moderate(),
+    'chat.mute'       => ChatController::mute(),
+    'chat.leave'      => ChatController::leave(),
+
+    'notifications'                  => NotificationController::index(),
+    'notifications.open'             => NotificationController::open(),
+    'notifications.readall'          => NotificationController::markAllRead(),
+    'notifications.preferences'      => NotificationController::preferences(),
+    'notifications.preferences.save' => NotificationController::savePreferences(),
+
+    'announcements'         => NotificationController::announcements(),
+    'announcements.publish' => NotificationController::publishAnnouncement(),
+
     'invoices'        => FinanceController::invoices(),
     'invoices.store'  => FinanceController::storeInvoice(),
     'invoices.show'   => FinanceController::showInvoice(),
@@ -135,6 +155,45 @@ match ($route) {
     'settings'        => PlatformController::settings(),
     'settings.update' => PlatformController::settingsUpdate(),
     'audit'           => PlatformController::audit(),
+
+    'recruitment'                    => RecruitmentAdminController::index(),
+    'recruitment.jobs'               => RecruitmentAdminController::jobs(),
+    'recruitment.jobs.create'        => RecruitmentAdminController::jobCreate(),
+    'recruitment.jobs.store'         => RecruitmentAdminController::jobStore(),
+    'recruitment.jobs.edit'          => RecruitmentAdminController::jobEdit(),
+    'recruitment.jobs.update'        => RecruitmentAdminController::jobUpdate(),
+    'recruitment.jobs.publish'       => RecruitmentAdminController::jobPublish(),
+    'recruitment.jobs.unpublish'     => RecruitmentAdminController::jobUnpublish(),
+    'recruitment.jobs.close'         => RecruitmentAdminController::jobClose(),
+    'recruitment.jobs.duplicate'     => RecruitmentAdminController::jobDuplicate(),
+    'recruitment.jobs.questions'         => RecruitmentAdminController::jobQuestions(),
+    'recruitment.jobs.questions.store'   => RecruitmentAdminController::jobQuestionStore(),
+    'recruitment.jobs.questions.delete'  => RecruitmentAdminController::jobQuestionDelete(),
+
+    'recruitment.departments'       => RecruitmentAdminController::departments(),
+    'recruitment.departments.store' => RecruitmentAdminController::departmentStore(),
+    'recruitment.categories'        => RecruitmentAdminController::categories(),
+    'recruitment.categories.store'  => RecruitmentAdminController::categoryStore(),
+
+    'recruitment.applications'          => RecruitmentAdminController::applications(),
+    'recruitment.applications.show'     => RecruitmentAdminController::applicationShow(),
+    'recruitment.applications.review'   => RecruitmentAdminController::applicationReview(),
+    'recruitment.applications.decide'   => RecruitmentAdminController::applicationDecide(),
+    'recruitment.notes.store'           => RecruitmentAdminController::noteStore(),
+    'recruitment.documents.download'    => RecruitmentAdminController::documentDownload(),
+    'recruitment.reports'               => RecruitmentAdminController::reports(),
+
+    'recruitment.emailtemplates'        => RecruitmentAdminController::emailTemplates(),
+    'recruitment.emailtemplates.edit'   => RecruitmentAdminController::emailTemplateEdit(),
+    'recruitment.emailtemplates.save'   => RecruitmentAdminController::emailTemplateSave(),
+    'recruitment.emaillogs'             => RecruitmentAdminController::emailLogs(),
+
+    'recruitment.interviews.store'          => InterviewController::store(),
+    'recruitment.interviews.reschedule'     => InterviewController::reschedule(),
+    'recruitment.interviews.status'         => InterviewController::updateStatus(),
+    'recruitment.interviews.mine'           => InterviewController::myInterviews(),
+    'recruitment.interviews.feedback'       => InterviewController::feedback(),
+    'recruitment.interviews.feedback.store' => InterviewController::feedbackStore(),
 
     default => (function () {
         http_response_code(404);

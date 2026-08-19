@@ -23,6 +23,8 @@ is written until this is signed off.
 | 12 | [Phase 7 — Applications & Students](12-applications-students.md) | 10, 11, 14, 34 |
 | 13 | [Phase 8 — LMS](13-lms.md) | 18, 19, 20, 23 |
 | 14 | [Phase 9 — Finance & Payments](14-finance-payments.md) | 26–31, 39 |
+| 15 | [Phase 10 — Communication](15-communication.md) | 24, 37 |
+| 16 | [Phase 11 — Careers Portal & Recruitment](16-careers-portal.md) | 40, 43, 51 |
 
 Design system and UI decomposition live one level up in `docs/`.
 
@@ -203,4 +205,9 @@ enrolment invoice now activates it automatically, whatever the payment method.
 > fully exercised locally, but `initialise()`/`verify()` need real API keys. Run a sandbox
 > transaction per provider before launch.
 
-Next up per the revised roadmap (§80): **Phase 10 — Communication**.
+Phase 10 (Communication — [15](15-communication.md)) adds the notification engine and
+chat/groups, and closes the notification TODOs Phases 6, 7 and 9 left open. Phase 11
+(Careers Portal — [16](16-careers-portal.md)) adds a public careers site and recruitment
+back office on a separate session, with its own roles.
+
+Next up per the revised roadmap (§80): **Phase 12 — Management & Reporting**.

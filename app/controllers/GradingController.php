@@ -56,8 +56,15 @@ final class GradingController
             exit;
         }
 
-        Assignment::grade($id, $score, trim((string) ($_POST['feedback'] ?? '')));
+        $feedback = trim((string) ($_POST['feedback'] ?? ''));
+        Assignment::grade($id, $score, $feedback);
         Audit::log('assignment.graded', 'assignment_submissions', $id, null, ['score' => $score, 'max' => $max]);
+
+        Notify::send((int) $submission['user_id'], 'assignment.graded', 'learning',
+            'Your assignment was graded',
+            $submission['assignment_title'] . ' — ' . $score . '/' . $max
+                . ($feedback !== '' ? '. Feedback provided.' : '.'),
+            'app.php?r=learn');
         Session::flash('success', "Graded $score/$max.");
         header('Location: app.php?r=grading');
         exit;

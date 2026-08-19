@@ -4,7 +4,12 @@ declare(strict_types=1);
 /** Starts the PHP session with sane, explicit cookie params. Call once per request. */
 final class Session
 {
-    public static function start(): void
+    /**
+     * @param string $name distinct cookie name per surface, so the careers portal
+     *     (docs/architecture/16-careers-portal.md §7) never shares a login with the LMS —
+     *     signing into one does not open a session in the other.
+     */
+    public static function start(string $name = 'ultrademy_session'): void
     {
         if (session_status() === PHP_SESSION_ACTIVE) {
             return;
@@ -15,7 +20,7 @@ final class Session
             'httponly' => true,
             'samesite' => 'Lax',
         ]);
-        session_name('ultrademy_session');
+        session_name($name);
         session_start();
     }
 
