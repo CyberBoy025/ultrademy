@@ -51,6 +51,25 @@ match ($route) {
     'subscriptions.activate' => SubscriptionController::activate(),
     'subscriptions.void'     => SubscriptionController::voidSub(),
 
+    'apply'                 => ApplicationController::apply(),
+    'apply.store'           => ApplicationController::store(),
+    'myapplications'        => ApplicationController::mine(),
+    'applications'          => ApplicationController::index(),
+    'applications.show'     => ApplicationController::show(),
+    'applications.review'   => ApplicationController::review(),
+    'applications.decide'   => ApplicationController::decide(),
+    'applications.enrol'    => ApplicationController::enrol(),
+    'applications.withdraw' => ApplicationController::withdraw(),
+
+    'documents.upload'   => ApplicationController::uploadDocument(),
+    'documents.download' => ApplicationController::downloadDocument(),
+    'documents.status'   => ApplicationController::documentStatus(),
+
+    'students'          => StudentController::index(),
+    'students.show'     => StudentController::show(),
+    'students.status'   => StudentController::setStatus(),
+    'students.transfer' => StudentController::transfer(),
+
     'overrides'        => SubscriptionController::overrides(),
     'overrides.store'  => SubscriptionController::overrideStore(),
     'overrides.remove' => SubscriptionController::overrideRemove(),

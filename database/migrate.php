@@ -33,7 +33,18 @@ foreach ($files as $path) {
     }
     $sql = file_get_contents($path);
     echo "Applying $name ... ";
-    $pdo->exec($sql);
+    try {
+        $pdo->exec($sql);
+    } catch (PDOException $e) {
+        // MySQL DDL cannot be rolled back, so a failure here may have applied part of the
+        // file. Report which one and stop, rather than dumping a stack trace and carrying
+        // on into migrations that assume this one succeeded.
+        echo "FAILED\n\n";
+        fwrite(STDERR, "Migration $name failed:\n  " . $e->getMessage() . "\n\n"
+            . "It was NOT recorded as applied. Any statements before the failure may have\n"
+            . "run — check the schema before re-running.\n");
+        exit(1);
+    }
     $pdo->prepare('INSERT INTO migrations (filename) VALUES (:f)')->execute(['f' => $name]);
     echo "done\n";
     $ran++;

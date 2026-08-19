@@ -29,3 +29,9 @@ Thumbs.db
 # Database dumps
 *.sql.gz
 /database/dumps/
+
+# Uploaded documents — PII, never committed
+/storage/app/*
+!/storage/app/documents/
+/storage/app/documents/*
+!/storage/app/documents/.gitkeep

@@ -31,6 +31,30 @@ final class Nav
             ];
         }
 
+        // Applicants and students track their own applications; staff get the review queue
+        // instead. Someone who is both sees both, which is the point of one account holding
+        // several relationships (README §3).
+        if (!Auth::isStaff()) {
+            $items[] = [
+                'key' => 'myapplications', 'label' => 'My Applications', 'href' => 'app.php?r=myapplications',
+                'icon' => '<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/>',
+            ];
+        }
+
+        if (Auth::can('admissions.application.view_any') && Auth::isStaff()) {
+            $items[] = [
+                'key' => 'applications', 'label' => 'Applications', 'href' => 'app.php?r=applications',
+                'icon' => '<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/>',
+            ];
+        }
+
+        if (Auth::can('admissions.enrolment.create')) {
+            $items[] = [
+                'key' => 'students', 'label' => 'Students', 'href' => 'app.php?r=students',
+                'icon' => '<path d="M3 9l9-5 9 5-9 5-9-5z"/><path d="M7 11.5V16c0 1.7 2.2 3 5 3s5-1.3 5-3v-4.5"/>',
+            ];
+        }
+
         if (Auth::can('staff.member.view_any')) {
             $items[] = [
                 'key' => 'centres', 'label' => 'Centres', 'href' => 'app.php?r=centres',

@@ -1,0 +1,3 @@
+# Application internals — never served directly. Requests are routed through
+# public/app.php, which is the only entry point that runs authorisation first.
+Require all denied

@@ -1,0 +1,24 @@
+# Only `public/` is meant to be reachable by a browser. Under XAMPP the project sits
+# inside DocumentRoot (htdocs/ultra), so without this file Apache happily serves .env,
+# every source file, and everything under storage/ — including uploaded ID documents.
+#
+# This is defence in depth, NOT the real fix. The real fix is a vhost whose DocumentRoot
+# points at .../ultra/public — see docs/architecture/12-applications-students.md §8.
+# Keep both: .htaccess protects the default XAMPP layout that developers actually run.
+
+# Dotfiles — .env, .env.local, .gitignore, and anything else beginning with a dot.
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
+
+# Windows is case-insensitive; make sure a request for /.ENV is refused too.
+<FilesMatch "(?i)^\.env">
+    Require all denied
+</FilesMatch>
+
+# Batch helpers and dependency manifests have no business being fetched.
+<FilesMatch "(?i)\.(bat|sh|sql|log|md~)$">
+    Require all denied
+</FilesMatch>
+
+Options -Indexes

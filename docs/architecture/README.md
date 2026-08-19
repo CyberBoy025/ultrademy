@@ -20,6 +20,7 @@ is written until this is signed off.
 | 09 | [Phase 4 — Core Platform Foundation](09-core-foundation.md) | 4, 5, 49 |
 | 10 | [Phase 5 — Centres & Operations](10-centres-operations.md) | 9, 12–17, 21–22 |
 | 11 | [Phase 6 — Subscriptions & Entitlements](11-subscriptions-entitlements.md) | 6, 7 |
+| 12 | [Phase 7 — Applications & Students](12-applications-students.md) | 10, 11, 14, 34 |
 
 Design system and UI decomposition live one level up in `docs/`.
 
@@ -76,15 +77,18 @@ All five went unanswered, so the stated defaults were built. See
 | 15 | Is the affiliate programme available on Basic? | Yes |
 | 16 | Do staff implicitly receive student features? | Operational only (`operations` + `comms`) |
 
-### Before Phase 7 (Applications & Students)
+### Before Phase 7 (Applications & Students) — resolved
 
-| # | Question | Default |
+All five went unanswered, so the stated defaults were built. See
+[12-applications-students.md](12-applications-students.md) §5.
+
+| # | Question | Built as |
 |---|---|---|
-| 3 | Application fee charged on apply, or on admission? *(schema)* | On admission |
+| 3 | Application fee charged on apply, or on admission? *(schema)* | On admission — enrolment starts `pending_payment` |
 | 7 | May a student hold enrolments at two centres at once? *(schema)* | Yes |
-| 8 | Should a centre manager see online-only revenue and enrolments? | No |
-| 9 | May a centre manager approve admissions, or only recommend? | Recommend only |
-| 11 | May instructors see student contact details? | No — names and progress |
+| 8 | Should a centre manager see online-only revenue and enrolments? | No — online rows are invisible to a scoped role |
+| 9 | May a centre manager approve admissions, or only recommend? | Recommend only — enforced in the service, not just the UI |
+| 11 | May instructors see student contact details? | No — names and student numbers only |
 
 ### Before Phase 9 (Finance)
 
@@ -163,5 +167,15 @@ Phase 6 (Subscriptions & Entitlements —
 that §7 demands: no code anywhere names a package, and changing what a tier grants is a
 form submission rather than a deploy.
 
-Next up per the revised roadmap (§80): **Phase 7 — Applications & Students**, which is
-where Decisions 3, 7, 8, 9 and 11 become blocking.
+Phase 7 (Applications & Students — [12](12-applications-students.md)) closes the loop
+from README §11: a visitor registers, applies, is reviewed, admitted and becomes a
+student on **one account**, with the `applicant` and `student` roles granted and revoked
+automatically.
+
+> **Release blocker raised in Phase 7.** Apache serves this project from `htdocs/ultra`,
+> so `public/` was never really the web root — `.env`, all source, and uploaded ID
+> documents were fetchable over HTTP. `.htaccess` denials now block them, but production
+> must use a vhost whose DocumentRoot is `.../ultra/public`. See
+> [12-applications-students.md](12-applications-students.md) §6 and §8.
+
+Next up per the revised roadmap (§80): **Phase 8 — LMS**.

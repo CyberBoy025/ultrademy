@@ -1,6 +1,9 @@
 <?php
 /** @var array $session @var array $enrolments @var array $existing */
 $options = ['present' => 'Present', 'late' => 'Late', 'absent' => 'Absent', 'excused' => 'Excused'];
+// Decision 11: an instructor marks the register by name and student number — they do not
+// need, and do not get, the student's contact details.
+$showContact = Auth::maySeeContactDetails();
 ?>
 <div class="topbar">
   <div>
@@ -23,7 +26,10 @@ $options = ['present' => 'Present', 'late' => 'Late', 'absent' => 'Absent', 'exc
         <tbody>
           <?php foreach ($enrolments as $e): $current = $existing[$e['id']] ?? 'present'; ?>
           <tr>
-            <td><span class="cell-main"><?= View::e($e['student_name']) ?></span><span class="cell-sub"><?= View::e($e['email']) ?></span></td>
+            <td>
+              <span class="cell-main"><?= View::e($e['student_name']) ?></span>
+              <?php if ($showContact): ?><span class="cell-sub"><?= View::e($e['email']) ?></span><?php endif; ?>
+            </td>
             <td><?= View::e($e['student_no']) ?></td>
             <td>
               <select name="status[<?= $e['id'] ?>]">

@@ -67,6 +67,13 @@ $permissions = [
     ['subscriptions.subscription.view_any', 'subscriptions'],
     ['subscriptions.subscription.activate', 'subscriptions'],
     ['subscriptions.override.grant', 'subscriptions'],
+    ['admissions.application.view_any', 'admissions'],
+    ['admissions.application.create', 'admissions'],
+    ['admissions.application.review', 'admissions'],
+    ['admissions.application.approve', 'admissions'],
+    ['admissions.application.reject', 'admissions'],
+    ['admissions.enrolment.create', 'admissions'],
+    ['admissions.enrolment.transfer', 'admissions'],
 ];
 foreach ($permissions as [$code, $module]) {
     insertIgnore($pdo, 'INSERT IGNORE INTO permissions (code, module) VALUES (:c,:m)', ['c' => $code, 'm' => $module]);
@@ -81,6 +88,9 @@ $grants = [
         'operations.cohort.manage', 'operations.attendance.view_any',
         'platform.audit.view',
         'subscriptions.subscription.view_any',
+        // Decision 9: a centre manager recommends, management decides.
+        'admissions.application.view_any', 'admissions.application.approve',
+        'admissions.application.reject', 'admissions.enrolment.transfer',
     ],
     'administrator' => [
         'identity.user.view_any', 'identity.user.create', 'identity.user.update', 'identity.user.suspend',
@@ -89,6 +99,9 @@ $grants = [
         'education.programme.publish', 'platform.setting.update',
         'subscriptions.package.manage', 'subscriptions.subscription.view_any',
         'subscriptions.subscription.activate', 'subscriptions.override.grant',
+        'admissions.application.view_any', 'admissions.application.create',
+        'admissions.application.review', 'admissions.application.approve',
+        'admissions.application.reject', 'admissions.enrolment.create',
     ],
     'centre_manager' => [
         'identity.user.view_any', 'staff.member.view_any',
@@ -96,6 +109,9 @@ $grants = [
         'operations.cohort.manage', 'operations.session.schedule',
         'operations.attendance.mark', 'operations.attendance.view_any',
         'operations.room.manage', 'operations.equipment.manage',
+        // Reviews and admits at their own centre, but cannot approve — Decision 9.
+        'admissions.application.view_any', 'admissions.application.review',
+        'admissions.enrolment.create',
     ],
     // Activation is payment-driven once Phase 9 lands, and the accountant is who verifies
     // payments (05-finance-payments.md) — so activation sits with them, not the cashier.
@@ -108,9 +124,14 @@ $grants = [
         'education.programme.view_any', 'operations.session.schedule',
         'operations.attendance.mark', 'operations.attendance.view_any',
     ],
-    'receptionist' => ['education.programme.view_any'],
+    // Front desk: takes applications from walk-ins, but has no say in the decision.
+    'receptionist' => [
+        'education.programme.view_any',
+        'admissions.application.view_any', 'admissions.application.create',
+    ],
     'student' => ['education.programme.view_any', 'operations.attendance.view_any'],
-    'applicant' => ['education.programme.view_any'],
+    // Ownership-scoped: the controller constrains these to the applicant's own records.
+    'applicant' => ['education.programme.view_any', 'admissions.application.view_any'],
     'affiliate' => ['education.programme.view_any'],
 ];
 foreach ($grants as $roleCode => $permCodes) {

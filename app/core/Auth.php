@@ -216,6 +216,25 @@ final class Auth
         return array_values(array_unique($ids));
     }
 
+    /**
+     * Decision 11 default: "May instructors see student contact details? No — names and
+     * progress." Anyone whose only staff role is `instructor` gets the redacted view.
+     *
+     * Lives here rather than in a controller because two very different screens depend on
+     * it — the student roster and the attendance sheet — and they must not drift apart.
+     */
+    public static function maySeeContactDetails(): bool
+    {
+        if (self::isSuperAdmin()) {
+            return true;
+        }
+        $staffRoles = array_values(array_diff(self::roles(), self::NON_STAFF_ROLES));
+        if ($staffRoles === ['instructor']) {
+            return false;
+        }
+        return self::isStaff();
+    }
+
     public static function requireLogin(): void
     {
         if (!self::check()) {
