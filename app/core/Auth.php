@@ -126,6 +126,30 @@ final class Auth
         return self::hasRole('super_admin');
     }
 
+    /** Roles that are relationships to UltrAdemy rather than jobs within it. */
+    public const NON_STAFF_ROLES = ['student', 'applicant', 'affiliate'];
+
+    /**
+     * True if the user holds any role that is not purely a customer relationship.
+     *
+     * This is the line between "listings are centre-scoped" and "listings are
+     * ownership-scoped" (03-rbac.md §5: `◐` vs `○`). A user with no roles at all is
+     * NOT staff — a bare registration must not inherit staff visibility.
+     */
+    public static function isStaff(?int $userId = null): bool
+    {
+        $userId ??= self::id();
+        if ($userId === null) {
+            return false;
+        }
+        $ph = implode(',', array_fill(0, count(self::NON_STAFF_ROLES), '?'));
+        return Database::query(
+            "SELECT 1 FROM user_roles ur JOIN roles r ON r.id = ur.role_id
+             WHERE ur.user_id = ? AND r.code NOT IN ($ph) LIMIT 1",
+            array_merge([$userId], self::NON_STAFF_ROLES)
+        )->fetch() !== false;
+    }
+
     /** True if any held role grants this permission at all (no scope filtering — see scopeCentres()). */
     public static function can(string $permission): bool
     {

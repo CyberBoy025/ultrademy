@@ -36,6 +36,25 @@ final class ClassSession
         return Database::query(self::BASE_SELECT . ' WHERE cs.class_group_id = ? ORDER BY cs.starts_at', [$groupId])->fetchAll();
     }
 
+    /**
+     * Sessions for the cohorts this user is actively enrolled in, plus (if they instruct)
+     * the ones they teach. Ownership-scoped: a student can only ever see their own — there
+     * is no query shape here that returns another student's schedule (03-rbac.md §7).
+     */
+    public static function forUser(int $userId, int $daysAhead = 30): array
+    {
+        return Database::query(
+            self::BASE_SELECT . '
+             WHERE cs.starts_at BETWEEN DATE_SUB(NOW(), INTERVAL 1 DAY) AND DATE_ADD(NOW(), INTERVAL ? DAY)
+               AND (
+                    cg.cohort_id IN (SELECT cohort_id FROM enrolments WHERE user_id = ? AND status = "active")
+                 OR cg.instructor_user_id = ?
+               )
+             ORDER BY cs.starts_at',
+            [$daysAhead, $userId, $userId]
+        )->fetchAll();
+    }
+
     public static function find(int $id): ?array
     {
         $rows = Database::query(self::BASE_SELECT . ' WHERE cs.id = ?', [$id])->fetchAll();

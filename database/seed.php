@@ -63,6 +63,10 @@ $permissions = [
     ['operations.attendance.mark', 'operations'], ['operations.attendance.view_any', 'operations'],
     ['operations.room.manage', 'operations'], ['operations.equipment.manage', 'operations'],
     ['platform.setting.update', 'platform'], ['platform.audit.view', 'platform'],
+    ['subscriptions.package.manage', 'subscriptions'],
+    ['subscriptions.subscription.view_any', 'subscriptions'],
+    ['subscriptions.subscription.activate', 'subscriptions'],
+    ['subscriptions.override.grant', 'subscriptions'],
 ];
 foreach ($permissions as [$code, $module]) {
     insertIgnore($pdo, 'INSERT IGNORE INTO permissions (code, module) VALUES (:c,:m)', ['c' => $code, 'm' => $module]);
@@ -76,12 +80,15 @@ $grants = [
         'education.programme.view_any', 'education.programme.approve',
         'operations.cohort.manage', 'operations.attendance.view_any',
         'platform.audit.view',
+        'subscriptions.subscription.view_any',
     ],
     'administrator' => [
         'identity.user.view_any', 'identity.user.create', 'identity.user.update', 'identity.user.suspend',
         'identity.role.assign', 'staff.member.view_any', 'staff.member.assign_centre',
         'education.programme.view_any', 'education.programme.create', 'education.programme.update',
         'education.programme.publish', 'platform.setting.update',
+        'subscriptions.package.manage', 'subscriptions.subscription.view_any',
+        'subscriptions.subscription.activate', 'subscriptions.override.grant',
     ],
     'centre_manager' => [
         'identity.user.view_any', 'staff.member.view_any',
@@ -90,7 +97,12 @@ $grants = [
         'operations.attendance.mark', 'operations.attendance.view_any',
         'operations.room.manage', 'operations.equipment.manage',
     ],
-    'accountant' => ['education.programme.view_any'],
+    // Activation is payment-driven once Phase 9 lands, and the accountant is who verifies
+    // payments (05-finance-payments.md) — so activation sits with them, not the cashier.
+    'accountant' => [
+        'education.programme.view_any',
+        'subscriptions.subscription.view_any', 'subscriptions.subscription.activate',
+    ],
     'cashier' => [],
     'instructor' => [
         'education.programme.view_any', 'operations.session.schedule',
@@ -236,6 +248,103 @@ foreach (['blessing.eze@ultrademy.com' => 'UD-2026-0001', 'kelvin.musa@ultrademy
         'no' => $studentNo, 'u' => $uid, 'p' => $webDevId, 'c' => $cohortId, 'centre' => $gwgId,
     ]);
 }
+
+echo "Seeding feature registry (04-subscriptions-entitlements.md §3)...\n";
+// [code, name, module, limit_type]
+$features = [
+    ['calendar',               'Calendar',                'operations', 'none'],
+    ['events',                 'Events',                  'operations', 'none'],
+    ['programme_applications', 'Programme Applications',  'admissions', 'count'],
+    ['online_learning',        'Online Learning',         'education',  'none'],
+    ['assignments',            'Assignments',             'education',  'none'],
+    ['assessments',            'Assessments',             'education',  'none'],
+    ['certificates',           'Certificates',            'education',  'none'],
+    ['premium_resources',      'Premium Resources',       'education',  'none'],
+    ['special_programmes',     'Special Programmes',      'education',  'none'],
+    ['chat_direct',            'Direct Chat',             'comms',      'none'],
+    ['chat_groups',            'Group Chat',              'comms',      'count'],
+    ['affiliate_programme',    'Affiliate Programme',     'affiliate',  'none'],
+    ['file_storage',           'File Storage',            'platform',   'bytes'],
+];
+foreach ($features as [$code, $name, $module, $limitType]) {
+    insertIgnore($pdo, 'INSERT IGNORE INTO features (code, name, module, limit_type) VALUES (:c,:n,:m,:l)', [
+        'c' => $code, 'n' => $name, 'm' => $module, 'l' => $limitType,
+    ]);
+}
+
+echo "Seeding packages...\n";
+// [code, name, price_naira, billing_period, duration_days, sort_order, description]
+$packages = [
+    ['basic',    'Basic',    0,     'monthly', 30,  1, 'Account essentials — browse and stay in touch.'],
+    ['standard', 'Standard', 5000,  'monthly', 30,  2, 'Calendar, applications and online learning.'],
+    ['premium',  'Premium',  15000, 'monthly', 30,  3, 'Full online learning with assignments, assessments and certificates.'],
+    ['advanced', 'Advanced', 30000, 'monthly', 30,  4, 'Everything in Premium, plus premium resources and unlimited applications.'],
+];
+foreach ($packages as [$code, $name, $priceNaira, $period, $days, $sort, $desc]) {
+    insertIgnore($pdo, 'INSERT IGNORE INTO packages (code, name, description, price_amount, currency, billing_period, duration_days, status, sort_order)
+        VALUES (:c,:n,:d,:p,\'NGN\',:bp,:dd,\'active\',:so)', [
+        'c' => $code, 'n' => $name, 'd' => $desc, 'p' => $priceNaira * 100,
+        'bp' => $period, 'dd' => $days, 'so' => $sort,
+    ]);
+}
+
+echo "Mapping package -> features (the §4 matrix — data, never code)...\n";
+// null = unlimited; a feature absent from a package's list is simply OFF.
+// Storage in bytes: 100 MB / 1 GB / 10 GB / 50 GB.
+const MB = 1048576;
+const GB = 1073741824;
+$matrix = [
+    'basic' => [
+        'chat_direct' => null,
+        'affiliate_programme' => null,          // Decision 15: available at every tier
+        'file_storage' => 100 * MB,
+    ],
+    'standard' => [
+        'calendar' => null, 'events' => null,
+        'programme_applications' => 1,
+        'online_learning' => null,
+        'chat_direct' => null, 'chat_groups' => 2,
+        'affiliate_programme' => null,
+        'file_storage' => 1 * GB,
+    ],
+    'premium' => [
+        'calendar' => null, 'events' => null,
+        'programme_applications' => 3,
+        'online_learning' => null, 'assignments' => null, 'assessments' => null, 'certificates' => null,
+        'chat_direct' => null, 'chat_groups' => 10,
+        'affiliate_programme' => null,
+        'file_storage' => 10 * GB,
+    ],
+    'advanced' => [
+        'calendar' => null, 'events' => null,
+        'programme_applications' => null,       // unlimited
+        'online_learning' => null, 'assignments' => null, 'assessments' => null, 'certificates' => null,
+        'premium_resources' => null, 'special_programmes' => null,
+        'chat_direct' => null, 'chat_groups' => null,
+        'affiliate_programme' => null,
+        'file_storage' => 50 * GB,
+    ],
+];
+foreach ($matrix as $pkgCode => $featureLimits) {
+    $pkgId = idBy($pdo, 'packages', 'code', $pkgCode);
+    foreach ($featureLimits as $featCode => $limit) {
+        $featId = idBy($pdo, 'features', 'code', $featCode);
+        insertIgnore($pdo, 'INSERT IGNORE INTO package_features (package_id, feature_id, limit_value) VALUES (:p,:f,:l)', [
+            'p' => $pkgId, 'f' => $featId, 'l' => $limit,
+        ]);
+    }
+}
+
+echo "Giving one demo student an active Premium subscription (for entitlement testing)...\n";
+$blessingId = idBy($pdo, 'users', 'email', 'blessing.eze@ultrademy.com');
+$premiumId  = idBy($pdo, 'packages', 'code', 'premium');
+$existing = $pdo->prepare("SELECT id FROM subscriptions WHERE user_id = :u AND status = 'active'");
+$existing->execute(['u' => $blessingId]);
+if ($existing->fetchColumn() === false) {
+    insertIgnore($pdo, "INSERT INTO subscriptions (user_id, package_id, status, starts_at, ends_at)
+        VALUES (:u,:p,'active', NOW(), DATE_ADD(NOW(), INTERVAL 30 DAY))", ['u' => $blessingId, 'p' => $premiumId]);
+}
+// Kelvin deliberately gets NO subscription, so the paywall path is demonstrable too.
 
 echo "Seeding baseline settings...\n";
 $settings = [

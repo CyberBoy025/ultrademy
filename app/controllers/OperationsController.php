@@ -93,6 +93,24 @@ final class OperationsController
         exit;
     }
 
+    /**
+     * The user's own schedule. This is the first real ENTITLEMENT gate in the codebase:
+     * `calendar` is sold in Standard and above (04-subscriptions §4), while staff get it
+     * implicitly because an instructor should not have to buy a package to see the class
+     * they are teaching (§5 step 3 / Decision 16).
+     *
+     * Failure here is 402, not 403 — the user is allowed to want this, they just have not
+     * bought it.
+     */
+    public static function calendar(): void
+    {
+        Entitlements::requireFeature('calendar');
+        $main = View::render('calendar/index', [
+            'sessions' => ClassSession::forUser((int) Auth::id()),
+        ]);
+        View::shell('calendar', 'My Calendar', $main);
+    }
+
     public static function timetable(): void
     {
         Auth::requirePermission('operations.session.schedule');
@@ -103,17 +121,29 @@ final class OperationsController
 
     public static function attendanceIndex(): void
     {
-        if (!Auth::can('operations.attendance.mark') && !Auth::can('operations.attendance.view_any')) {
+        $canMark = Auth::can('operations.attendance.mark');
+        if (!$canMark && !Auth::can('operations.attendance.view_any')) {
             Auth::requirePermission('operations.attendance.mark');
         }
-        $scope = Auth::can('operations.attendance.mark')
-            ? Auth::scopeCentres('operations.attendance.mark')
-            : Auth::scopeCentres('operations.attendance.view_any');
-        $sessions = ClassSession::upcoming($scope, 30);
+
+        // 03-rbac.md §5 grades this permission `◐` for staff (centre-scoped) but `○` for
+        // students — own records only. scopeCentres() models GLOBAL vs CENTRES and has no
+        // notion of ownership, so a student's global grant would otherwise resolve to
+        // GLOBAL and expose every centre's timetable. Ownership scope is applied here
+        // instead, per §7: "a student's queries are constrained to user_id = self".
+        if ($canMark || Auth::isStaff()) {
+            $scope = $canMark
+                ? Auth::scopeCentres('operations.attendance.mark')
+                : Auth::scopeCentres('operations.attendance.view_any');
+            $sessions = ClassSession::upcoming($scope, 30);
+        } else {
+            $sessions = ClassSession::forUser((int) Auth::id(), 30);
+        }
+
         foreach ($sessions as &$s) {
             $s['rate'] = AttendanceRecord::rateForSession((int) $s['id']);
         }
-        $main = View::render('attendance/index', ['sessions' => $sessions, 'canMark' => Auth::can('operations.attendance.mark')]);
+        $main = View::render('attendance/index', ['sessions' => $sessions, 'canMark' => $canMark]);
         View::shell('attendance', 'Attendance', $main);
     }
 

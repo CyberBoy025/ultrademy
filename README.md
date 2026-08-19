@@ -2,14 +2,14 @@
 
 **Unified Student, Training, Subscription & Company Management Platform**
 
-> **Status:** Phase 5 — Centres & Operations. Phases 2–3 (public website, UI/UX design
-> system) are UX/visual builds; **Phase 4 (Core Platform Foundation) and Phase 5
-> (Centres & Operations) are real, running production code** — a MySQL database,
-> session auth enforcing centre-scoped permissions, and working CRUD for centres,
-> programmes, cohorts, timetabling and attendance. See
-> `docs/architecture/09-core-foundation.md` and
-> `docs/architecture/10-centres-operations.md`. See [Working notes](#working-notes) at
-> the end for local setup, demo logins and repo workflow.
+> **Status:** Phase 6 — Subscriptions & Entitlements. Phases 2–3 (public website, UI/UX
+> design system) are UX/visual builds; **Phases 4–6 are real, running production code** —
+> a MySQL database, session auth enforcing centre-scoped permissions, working CRUD for
+> centres, programmes, cohorts, timetabling and attendance, and a package/entitlement
+> engine in which no code names a package. See `docs/architecture/09-core-foundation.md`,
+> `10-centres-operations.md` and `11-subscriptions-entitlements.md`. See
+> [Working notes](#working-notes) at the end for local setup, demo logins and repo
+> workflow.
 
 ---
 
@@ -1541,6 +1541,8 @@ Light and dark themes are both first-class. Theme is a token swap driven by
   model, demo logins
 - `docs/architecture/10-centres-operations.md` — Phase 5: centres, programmes,
   cohorts, timetabling, attendance
+- `docs/architecture/11-subscriptions-entitlements.md` — Phase 6: packages, feature
+  registry, entitlement resolution, subscription lifecycle
 
 ### Current scaffold
 
@@ -1551,9 +1553,11 @@ app/
   views/         page templates
 config/          app + database configuration
 database/
-  migrations/    schema changes, in order (20 files as of Phase 5)
+  migrations/    schema changes, in order (26 files as of Phase 6)
   migrate.php    runner — applies new migrations, tracked in a `migrations` table
-  seed.php       dev/demo data — roles, permissions, centres, users, programmes...
+  seed.php       dev/demo data — roles, permissions, centres, users, programmes,
+                 packages and the feature matrix. Idempotent; safe to re-run.
+  expire-subscriptions.php  daily job — hard-stops subscriptions past ends_at
 public/          web root — the only folder the browser should reach
   css/ js/       shared site + app-shell stylesheets
   app.php        authenticated-app front controller (?r=route.name)

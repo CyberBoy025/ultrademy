@@ -19,6 +19,7 @@ is written until this is signed off.
 | 08 | [Phase 3 — UI/UX Design System](08-ui-design-system.md) | 44, 49, 4 |
 | 09 | [Phase 4 — Core Platform Foundation](09-core-foundation.md) | 4, 5, 49 |
 | 10 | [Phase 5 — Centres & Operations](10-centres-operations.md) | 9, 12–17, 21–22 |
+| 11 | [Phase 6 — Subscriptions & Entitlements](11-subscriptions-entitlements.md) | 6, 7 |
 
 Design system and UI decomposition live one level up in `docs/`.
 
@@ -62,15 +63,18 @@ are cheapest to answer now.
 | 4 | Expected concurrent users in year one? | 500 — default taken |
 | 10 | Is the accountant role global, or scoped per centre? | Global — default taken, seeded accordingly |
 
-### Before Phase 6 (Subscriptions)
+### Before Phase 6 (Subscriptions) — resolved
 
-| # | Question | Default |
+All five went unanswered, so the stated defaults were built. See
+[11-subscriptions-entitlements.md](11-subscriptions-entitlements.md) §6.
+
+| # | Question | Built as |
 |---|---|---|
-| 12 | Grace period after subscription expiry? | None |
-| 13 | Proration on mid-cycle upgrade? | None |
-| 14 | May a user hold two active subscriptions? | No |
+| 12 | Grace period after subscription expiry? | None — hard stop at `ends_at` |
+| 13 | Proration on mid-cycle upgrade? | None — upgrade supersedes and starts a full period |
+| 14 | May a user hold two active subscriptions? | No — enforced by a DB unique index |
 | 15 | Is the affiliate programme available on Basic? | Yes |
-| 16 | Do staff implicitly receive student features? | Operational only |
+| 16 | Do staff implicitly receive student features? | Operational only (`operations` + `comms`) |
 
 ### Before Phase 7 (Applications & Students)
 
@@ -154,5 +158,10 @@ the exact permission/scope model from [03-rbac.md](03-rbac.md), and working CRUD
 centres, rooms, staff, programmes, cohorts, timetabling and attendance — all verified
 against real logins, not just described.
 
-Next up per the revised roadmap (§80): **Phase 6 — Subscriptions & Entitlements**,
-blocked on Decisions 12–16 above.
+Phase 6 (Subscriptions & Entitlements —
+[11](11-subscriptions-entitlements.md)) adds the packages/features/entitlements engine
+that §7 demands: no code anywhere names a package, and changing what a tier grants is a
+form submission rather than a deploy.
+
+Next up per the revised roadmap (§80): **Phase 7 — Applications & Students**, which is
+where Decisions 3, 7, 8, 9 and 11 become blocking.

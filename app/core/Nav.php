@@ -21,6 +21,16 @@ final class Nav
             'icon' => '<path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/>',
         ];
 
+        // Entitlement-gated, not permission-gated: shown when the user's package (or their
+        // staff implicit grant) includes `calendar`. The link disappearing is presentation
+        // only — OperationsController::calendar() is the actual gate (04-subscriptions §6).
+        if (Entitlements::can('calendar')) {
+            $items[] = [
+                'key' => 'calendar', 'label' => 'My Calendar', 'href' => 'app.php?r=calendar',
+                'icon' => '<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
+            ];
+        }
+
         if (Auth::can('staff.member.view_any')) {
             $items[] = [
                 'key' => 'centres', 'label' => 'Centres', 'href' => 'app.php?r=centres',
@@ -60,6 +70,26 @@ final class Nav
             $items[] = [
                 'key' => 'users', 'label' => 'Users', 'href' => 'app.php?r=users',
                 'icon' => '<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/>',
+            ];
+        }
+
+        // Every signed-in user can see their own subscription and what it grants.
+        $items[] = [
+            'key' => 'subscription', 'label' => 'My Subscription', 'href' => 'app.php?r=subscription',
+            'icon' => '<rect x="2" y="4" width="20" height="14" rx="2"/><path d="M2 8h20"/>',
+        ];
+
+        if (Auth::can('subscriptions.package.manage')) {
+            $items[] = [
+                'key' => 'packages', 'label' => 'Packages', 'href' => 'app.php?r=packages',
+                'icon' => '<path d="m12 2 9 4.9V17L12 22l-9-5.1V6.9L12 2Z"/><path d="M3.3 7 12 12l8.7-5M12 22V12"/>',
+            ];
+        }
+
+        if (Auth::can('subscriptions.subscription.view_any')) {
+            $items[] = [
+                'key' => 'subscriptions', 'label' => 'Subscriptions', 'href' => 'app.php?r=subscriptions',
+                'icon' => '<path d="M20 6 9 17l-5-5"/><rect x="3" y="4" width="18" height="16" rx="2"/>',
             ];
         }
 

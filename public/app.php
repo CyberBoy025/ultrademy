@@ -35,6 +35,25 @@ match ($route) {
     'sessions.store'    => OperationsController::storeSession(),
 
     'timetable' => OperationsController::timetable(),
+    'calendar'  => OperationsController::calendar(),
+
+    'packages'          => PackageController::index(),
+    'packages.store'    => PackageController::store(),
+    'packages.show'     => PackageController::show(),
+    'packages.update'   => PackageController::update(),
+    'packages.features' => PackageController::features(),
+
+    'subscription'         => SubscriptionController::mine(),
+    'subscription.request' => SubscriptionController::request(),
+    'subscription.cancel'  => SubscriptionController::cancelMine(),
+
+    'subscriptions'          => SubscriptionController::index(),
+    'subscriptions.activate' => SubscriptionController::activate(),
+    'subscriptions.void'     => SubscriptionController::voidSub(),
+
+    'overrides'        => SubscriptionController::overrides(),
+    'overrides.store'  => SubscriptionController::overrideStore(),
+    'overrides.remove' => SubscriptionController::overrideRemove(),
 
     'attendance'       => OperationsController::attendanceIndex(),
     'attendance.mark'  => OperationsController::attendanceMark(),
