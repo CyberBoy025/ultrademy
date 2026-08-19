@@ -22,6 +22,7 @@ is written until this is signed off.
 | 11 | [Phase 6 — Subscriptions & Entitlements](11-subscriptions-entitlements.md) | 6, 7 |
 | 12 | [Phase 7 — Applications & Students](12-applications-students.md) | 10, 11, 14, 34 |
 | 13 | [Phase 8 — LMS](13-lms.md) | 18, 19, 20, 23 |
+| 14 | [Phase 9 — Finance & Payments](14-finance-payments.md) | 26–31, 39 |
 
 Design system and UI decomposition live one level up in `docs/`.
 
@@ -91,15 +92,18 @@ All five went unanswered, so the stated defaults were built. See
 | 9 | May a centre manager approve admissions, or only recommend? | Recommend only — enforced in the service, not just the UI |
 | 11 | May instructors see student contact details? | No — names and student numbers only |
 
-### Before Phase 9 (Finance)
+### Before Phase 9 (Finance) — resolved
 
-| # | Question | Default |
+All five went unanswered, so the stated defaults were built. See
+[14-finance-payments.md](14-finance-payments.md) §7.
+
+| # | Question | Built as |
 |---|---|---|
-| 17 | Instalment plans for programme fees? | Supported |
-| 18 | Late-payment penalty? | None |
-| 19 | Bank details — global setting, or per centre? *(schema)* | Global |
-| 20 | Sequentially numbered receipts for tax? | Yes |
-| 21 | Financial audit retention period? | 7 years — **needs legal input** |
+| 17 | Instalment plans for programme fees? | Supported — an invoice accepts several payments |
+| 18 | Late-payment penalty? | None — overdue is flagged, not charged |
+| 19 | Bank details — global setting, or per centre? *(schema)* | Global settings |
+| 20 | Sequentially numbered receipts for tax? | Yes — `RCP-YYMM-nnnn`, one per payment |
+| 21 | Financial audit retention period? | 7 years assumed — **still needs legal input** |
 
 ### Before Phase 11 (Affiliate)
 
@@ -184,6 +188,19 @@ modules, lessons, materials, progress, assignments, grading and certificates, in
 public certificate verification (Decision 5). **Assessments/quizzes are deliberately not
 in it** — see [13-lms.md](13-lms.md) §7 for why they were separated rather than rushed.
 
-Next up per the revised roadmap (§80): **Phase 9 — Finance & Payments**, which is where
-Decisions 17–21 become blocking, and which also unblocks two manual bridges already in
-place (subscription activation, and enrolment `pending_payment` → `active`).
+Phase 9 (Finance & Payments — [14](14-finance-payments.md)) adds invoices, payments, a
+gateway abstraction, manual bank-transfer verification, receipts, refunds, expenses,
+reports and reconciliation — and closes the two manual bridges: paying a subscription or
+enrolment invoice now activates it automatically, whatever the payment method.
+
+> **Two bugs worth knowing about, both found by testing and fixed.** Invoice numbering
+> deadlocked under concurrency (15 of 48 attempts lost); and webhook idempotency, as §5
+> literally describes it, let an *unsigned* request claim the dedupe slot and permanently
+> block the genuine signed webhook from crediting a payment. See
+> [14-finance-payments.md](14-finance-payments.md) §3.
+>
+> **Live gateway calls remain untested** — signature verification and idempotency are
+> fully exercised locally, but `initialise()`/`verify()` need real API keys. Run a sandbox
+> transaction per provider before launch.
+
+Next up per the revised roadmap (§80): **Phase 10 — Communication**.

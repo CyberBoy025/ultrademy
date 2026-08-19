@@ -119,6 +119,51 @@ final class Nav
             ];
         }
 
+        // Payers see their own bill; finance sees the ledger.
+        if (!Auth::can('finance.invoice.view_any')) {
+            $items[] = [
+                'key' => 'billing', 'label' => 'My Payments', 'href' => 'app.php?r=billing',
+                'icon' => '<rect x="2" y="4" width="20" height="14" rx="2"/><path d="M2 8h20"/>',
+            ];
+        } else {
+            $items[] = [
+                'key' => 'invoices', 'label' => 'Invoices', 'href' => 'app.php?r=invoices',
+                'icon' => '<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h4"/>',
+            ];
+            $items[] = [
+                'key' => 'payments', 'label' => 'Payments', 'href' => 'app.php?r=payments',
+                'icon' => '<rect x="2" y="4" width="20" height="14" rx="2"/><path d="M2 8h20"/>',
+            ];
+        }
+
+        if (Auth::can('finance.payment.verify')) {
+            $items[] = [
+                'key' => 'verify', 'label' => 'Verify Transfers', 'href' => 'app.php?r=verify',
+                'icon' => '<path d="M20 6 9 17l-5-5"/><rect x="3" y="3" width="18" height="18" rx="2"/>',
+            ];
+        }
+
+        if (Auth::can('finance.expense.record')) {
+            $items[] = [
+                'key' => 'expenses', 'label' => 'Expenses', 'href' => 'app.php?r=expenses',
+                'icon' => '<path d="M3 3v18h18"/><path d="M7 15l4-5 4 3 5-7"/>',
+            ];
+        }
+
+        if (Auth::can('finance.refund.create') || Auth::can('finance.refund.approve')) {
+            $items[] = [
+                'key' => 'refunds', 'label' => 'Refunds', 'href' => 'app.php?r=refunds',
+                'icon' => '<path d="M3 12a9 9 0 109-9"/><path d="M3 3v6h6"/>',
+            ];
+        }
+
+        if (Auth::can('finance.report.view')) {
+            $items[] = [
+                'key' => 'reports', 'label' => 'Financial Reports', 'href' => 'app.php?r=reports',
+                'icon' => '<path d="M3 3v18h18"/><rect x="7" y="10" width="3" height="8"/><rect x="13" y="6" width="3" height="12"/>',
+            ];
+        }
+
         // Every signed-in user can see their own subscription and what it grants.
         $items[] = [
             'key' => 'subscription', 'label' => 'My Subscription', 'href' => 'app.php?r=subscription',

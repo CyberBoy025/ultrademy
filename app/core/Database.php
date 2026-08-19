@@ -50,4 +50,48 @@ final class Database
     {
         return (int) self::pdo()->lastInsertId();
     }
+
+    /**
+     * Runs a callable inside a transaction, retrying on deadlock.
+     *
+     * InnoDB resolves a deadlock by killing one transaction; the correct response is to
+     * retry it, not to surface a 500 to whoever was unlucky. Anything touching money
+     * should go through here.
+     *
+     * @template T
+     * @param callable():T $work
+     * @return T
+     */
+    public static function transaction(callable $work, int $retries = 3): mixed
+    {
+        $pdo = self::pdo();
+        if ($pdo->inTransaction()) {
+            return $work(); // already inside one — let the outermost caller own it
+        }
+
+        for ($attempt = 1; ; $attempt++) {
+            $pdo->beginTransaction();
+            try {
+                $result = $work();
+                $pdo->commit();
+                return $result;
+            } catch (PDOException $e) {
+                if ($pdo->inTransaction()) {
+                    $pdo->rollBack();
+                }
+                // 1213 = deadlock, 1205 = lock wait timeout. Both are safe to retry.
+                $code = (int) ($e->errorInfo[1] ?? 0);
+                if (($code === 1213 || $code === 1205) && $attempt <= $retries) {
+                    usleep(random_int(20_000, 120_000) * $attempt);
+                    continue;
+                }
+                throw $e;
+            } catch (Throwable $e) {
+                if ($pdo->inTransaction()) {
+                    $pdo->rollBack();
+                }
+                throw $e;
+            }
+        }
+    }
 }

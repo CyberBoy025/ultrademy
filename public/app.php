@@ -90,6 +90,31 @@ match ($route) {
     'materials.download' => LearnController::downloadMaterial(),
     'submissions.download' => LearnController::downloadSubmission(),
 
+    'invoices'        => FinanceController::invoices(),
+    'invoices.store'  => FinanceController::storeInvoice(),
+    'invoices.show'   => FinanceController::showInvoice(),
+    'invoices.void'   => FinanceController::voidInvoice(),
+    'invoices.pay'    => FinanceController::payInvoice(),
+
+    'payments'        => FinanceController::payments(),
+    'payments.show'   => FinanceController::showPayment(),
+    'payments.cash'   => FinanceController::recordCash(),
+    'payments.verify' => FinanceController::verifyPayment(),
+    'verify'          => FinanceController::verificationQueue(),
+    'proofs.download' => FinanceController::downloadProof(),
+
+    'expenses'        => FinanceController::expenses(),
+    'expenses.store'  => FinanceController::storeExpense(),
+    'expenses.decide' => FinanceController::decideExpense(),
+
+    'refunds'         => FinanceController::refunds(),
+    'refunds.store'   => FinanceController::storeRefund(),
+    'refunds.decide'  => FinanceController::decideRefund(),
+
+    'reports'           => FinanceController::reports(),
+    'reports.reconcile' => FinanceController::reconcile(),
+    'billing'           => FinanceController::billing(),
+
     'grading'       => GradingController::queue(),
     'grading.show'  => GradingController::show(),
     'grading.grade' => GradingController::grade(),

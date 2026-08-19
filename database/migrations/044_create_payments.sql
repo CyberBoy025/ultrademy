@@ -1,0 +1,33 @@
+CREATE TABLE IF NOT EXISTS payments (
+    id                 BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    reference          VARCHAR(40) NOT NULL COMMENT 'our reference, ULP-…',
+    invoice_id         BIGINT UNSIGNED NOT NULL,
+    user_id            BIGINT UNSIGNED NOT NULL COMMENT 'who the payment is FOR — not necessarily who recorded it',
+    method             ENUM('paystack','flutterwave','bank_transfer','cash') NOT NULL,
+    gateway_reference  VARCHAR(120) NULL,
+    bank_reference     VARCHAR(120) NULL COMMENT 'the reference the payer quotes for a manual transfer',
+    amount             BIGINT UNSIGNED NOT NULL COMMENT 'minor units',
+    currency           CHAR(3) NOT NULL DEFAULT 'NGN',
+    status             ENUM('initiated','pending_verification','successful','failed','reversed') NOT NULL DEFAULT 'initiated',
+    paid_at            TIMESTAMP NULL DEFAULT NULL,
+    recorded_by        BIGINT UNSIGNED NULL COMMENT 'the cashier who took cash, or NULL for a self-service payment',
+    verified_by        BIGINT UNSIGNED NULL,
+    verified_at        TIMESTAMP NULL DEFAULT NULL,
+    failure_reason     VARCHAR(255) NULL,
+    centre_id          BIGINT UNSIGNED NULL,
+    meta               JSON NULL,
+    created_at         TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at         TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uq_payments_reference (reference),
+    -- A gateway reference identifies one charge. Letting it appear twice is how a retried
+    -- webhook credits an invoice twice.
+    UNIQUE KEY uq_payments_gateway_reference (gateway_reference),
+    KEY ix_payments_invoice (invoice_id, status),
+    KEY ix_payments_status (status, created_at),
+    KEY ix_payments_centre (centre_id, status),
+    CONSTRAINT fk_payments_invoice FOREIGN KEY (invoice_id) REFERENCES invoices(id) ON DELETE RESTRICT,
+    CONSTRAINT fk_payments_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE RESTRICT,
+    CONSTRAINT fk_payments_recorded_by FOREIGN KEY (recorded_by) REFERENCES users(id) ON DELETE SET NULL,
+    CONSTRAINT fk_payments_verified_by FOREIGN KEY (verified_by) REFERENCES users(id) ON DELETE SET NULL,
+    CONSTRAINT fk_payments_centre FOREIGN KEY (centre_id) REFERENCES centres(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

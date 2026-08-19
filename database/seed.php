@@ -79,6 +79,18 @@ $permissions = [
     ['education.lesson.view', 'education'],
     ['education.assignment.grade', 'education'],
     ['education.certificate.issue', 'education'],
+    ['finance.invoice.view_any', 'finance'],
+    ['finance.invoice.create', 'finance'],
+    ['finance.invoice.void', 'finance'],
+    ['finance.payment.record', 'finance'],
+    ['finance.payment.verify', 'finance'],
+    ['finance.receipt.issue', 'finance'],
+    ['finance.refund.create', 'finance'],
+    ['finance.refund.approve', 'finance'],
+    ['finance.expense.record', 'finance'],
+    ['finance.expense.approve', 'finance'],
+    ['finance.report.view', 'finance'],
+    ['finance.reconciliation.run', 'finance'],
 ];
 foreach ($permissions as [$code, $module]) {
     insertIgnore($pdo, 'INSERT IGNORE INTO permissions (code, module) VALUES (:c,:m)', ['c' => $code, 'm' => $module]);
@@ -97,6 +109,9 @@ $grants = [
         'admissions.application.view_any', 'admissions.application.approve',
         'admissions.application.reject', 'admissions.enrolment.transfer',
         'education.lesson.view', 'education.certificate.issue',
+        // §8: management approves refunds and expenses; it does not raise them.
+        'finance.invoice.view_any', 'finance.refund.approve',
+        'finance.expense.approve', 'finance.report.view',
     ],
     'administrator' => [
         'identity.user.view_any', 'identity.user.create', 'identity.user.update', 'identity.user.suspend',
@@ -121,14 +136,27 @@ $grants = [
         'admissions.application.view_any', 'admissions.application.review',
         'admissions.enrolment.create',
         'education.lesson.view',
+        'finance.invoice.view_any', 'finance.expense.record', 'finance.report.view',
     ],
     // Activation is payment-driven once Phase 9 lands, and the accountant is who verifies
     // payments (05-finance-payments.md) — so activation sits with them, not the cashier.
     'accountant' => [
         'education.programme.view_any',
         'subscriptions.subscription.view_any', 'subscriptions.subscription.activate',
+        // The full finance desk, minus refund APPROVAL — that sits with management.
+        'finance.invoice.view_any', 'finance.invoice.create', 'finance.invoice.void',
+        'finance.payment.record', 'finance.payment.verify', 'finance.receipt.issue',
+        'finance.refund.create', 'finance.expense.record', 'finance.expense.approve',
+        'finance.report.view', 'finance.reconciliation.run',
+        'identity.user.view_any',
     ],
-    'cashier' => [],
+    // §8, the separation-of-duties spine: a cashier takes money and issues receipts.
+    // They deliberately do NOT get payment.verify, invoice.void, refund.create or
+    // report.view — the person handling cash cannot also confirm money that never
+    // arrived, reverse a charge, or hide it by voiding.
+    'cashier' => [
+        'finance.invoice.view_any', 'finance.payment.record', 'finance.receipt.issue',
+    ],
     'instructor' => [
         'education.programme.view_any', 'operations.session.schedule',
         'operations.attendance.mark', 'operations.attendance.view_any',
@@ -453,6 +481,16 @@ $settings = [
     ['site_name', json_encode('UltrAdemy'), 'general', 1],
     ['site_timezone', json_encode('Africa/Lagos'), 'general', 1],
     ['support_email', json_encode('info@ultrademy.com'), 'general', 1],
+    // Decision 19: bank details are a GLOBAL setting, not hard-coded and not per centre.
+    // Placeholders — real details must be entered in Settings before going live.
+    ['bank_name', json_encode(''), 'finance', 0],
+    ['bank_account_name', json_encode(''), 'finance', 0],
+    ['bank_account_number', json_encode(''), 'finance', 0],
+    // Gateway credentials live here rather than in .env so an administrator can rotate
+    // them without a deploy. Empty = that provider is simply not offered.
+    ['paystack_secret_key', json_encode(''), 'finance', 0],
+    ['flutterwave_secret_key', json_encode(''), 'finance', 0],
+    ['flutterwave_webhook_hash', json_encode(''), 'finance', 0],
 ];
 foreach ($settings as [$key, $value, $group, $public]) {
     insertIgnore($pdo, 'INSERT IGNORE INTO settings (`key`, value, `group`, is_public) VALUES (:k,:v,:g,:p)', [

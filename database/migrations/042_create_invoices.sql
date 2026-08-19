@@ -1,0 +1,31 @@
+CREATE TABLE IF NOT EXISTS invoices (
+    id               BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    number           VARCHAR(30) NOT NULL,
+    user_id          BIGINT UNSIGNED NOT NULL,
+    -- Polymorphic on purpose (02-data-model.md §7): an invoice may be for an enrolment,
+    -- a subscription or an application fee, and §46 will add corporate contracts. A
+    -- nullable FK per type would mean a schema change per new payable.
+    payable_type     ENUM('enrolment','subscription','application_fee','other') NOT NULL DEFAULT 'other',
+    payable_id       BIGINT UNSIGNED NULL,
+    centre_id        BIGINT UNSIGNED NULL COMMENT 'NULL = online/global — never folded into a physical centre (§31)',
+    subtotal_amount  BIGINT UNSIGNED NOT NULL DEFAULT 0 COMMENT 'minor units (kobo)',
+    discount_amount  BIGINT UNSIGNED NOT NULL DEFAULT 0,
+    total_amount     BIGINT UNSIGNED NOT NULL DEFAULT 0 COMMENT 'derived from lines, stored so history survives a price change',
+    currency         CHAR(3) NOT NULL DEFAULT 'NGN',
+    status           ENUM('draft','issued','part_paid','paid','overdue','void') NOT NULL DEFAULT 'draft',
+    due_on           DATE NULL,
+    issued_at        TIMESTAMP NULL DEFAULT NULL,
+    void_reason      VARCHAR(255) NULL,
+    voided_by        BIGINT UNSIGNED NULL,
+    created_by       BIGINT UNSIGNED NULL,
+    created_at       TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at       TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uq_invoices_number (number),
+    KEY ix_invoices_user (user_id, status),
+    KEY ix_invoices_centre_status (centre_id, status, due_on),
+    KEY ix_invoices_payable (payable_type, payable_id),
+    CONSTRAINT fk_invoices_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE RESTRICT,
+    CONSTRAINT fk_invoices_centre FOREIGN KEY (centre_id) REFERENCES centres(id) ON DELETE SET NULL,
+    CONSTRAINT fk_invoices_voided_by FOREIGN KEY (voided_by) REFERENCES users(id) ON DELETE SET NULL,
+    CONSTRAINT fk_invoices_creator FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
