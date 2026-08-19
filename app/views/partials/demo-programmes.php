@@ -1,0 +1,81 @@
+<?php
+/**
+ * Placeholder programme data for the Phase 2 public-website UX build.
+ * Real programmes come from Programme Management (README §9, §57) once
+ * that backend exists — this array is only here so the public pages have
+ * something real to render and is not meant to ship to production.
+ */
+return [
+    [
+        'slug'        => 'web-development',
+        'name'        => 'Web Development',
+        'summary'     => 'Build real, deployable websites and web applications from first principles — HTML, CSS, JavaScript and a modern backend stack.',
+        'mode'        => 'Hybrid',
+        'duration'    => '12 weeks',
+        'centres'     => ['Gwagwalada Hub', 'Kubwa Hub', 'Online'],
+        'category'    => 'Technology',
+        'outline'     => ['Foundations of the web & version control', 'HTML, CSS and responsive layout', 'JavaScript and interactive interfaces', 'Backend fundamentals & databases', 'Deploying and maintaining a live project'],
+        'who_for'     => 'Beginners and career changers who want a practical, project-based route into software development.',
+        'requirements'=> ['Basic computer literacy', 'A laptop for practical sessions', 'No prior coding experience required'],
+    ],
+    [
+        'slug'        => 'data-analysis',
+        'name'        => 'Data Analysis',
+        'summary'     => 'Turn raw data into decisions — spreadsheets, SQL, visualization and the analytical thinking employers ask for.',
+        'mode'        => 'Online',
+        'duration'    => '10 weeks',
+        'centres'     => ['Online'],
+        'category'    => 'Technology',
+        'outline'     => ['Data fundamentals & spreadsheets', 'SQL for analysts', 'Data cleaning & preparation', 'Visualization & dashboards', 'A capstone analysis project'],
+        'who_for'     => 'Professionals who work with data and want a structured, practical upgrade to their analytical skillset.',
+        'requirements'=> ['Basic computer literacy', 'A laptop for practical sessions'],
+    ],
+    [
+        'slug'        => 'digital-marketing',
+        'name'        => 'Digital Marketing',
+        'summary'     => 'Plan and run digital campaigns across search, social and content — with real briefs, not just theory.',
+        'mode'        => 'Physical',
+        'duration'    => '8 weeks',
+        'centres'     => ['Gwagwalada Hub'],
+        'category'    => 'Business',
+        'outline'     => ['Marketing strategy & positioning', 'Content & social media', 'Search & paid campaigns', 'Analytics & reporting', 'Campaign planning project'],
+        'who_for'     => 'Small business owners, marketers and graduates who want practical, hands-on campaign experience.',
+        'requirements'=> ['Basic computer literacy'],
+    ],
+    [
+        'slug'        => 'graphic-design',
+        'name'        => 'Graphic Design',
+        'summary'     => 'Design for brands, print and digital — visual principles, industry tools and a portfolio to show for it.',
+        'mode'        => 'Hybrid',
+        'duration'    => '10 weeks',
+        'centres'     => ['Kubwa Hub', 'Online'],
+        'category'    => 'Creative',
+        'outline'     => ['Design principles & typography', 'Brand identity design', 'Digital design tools', 'Print & packaging design', 'Portfolio project'],
+        'who_for'     => 'Creatives who want formal grounding and a professional portfolio.',
+        'requirements'=> ['A laptop for practical sessions'],
+    ],
+    [
+        'slug'        => 'project-management',
+        'name'        => 'Project Management',
+        'summary'     => 'Plan, run and deliver projects with confidence — practical frameworks used across industries.',
+        'mode'        => 'Corporate',
+        'duration'    => '6 weeks',
+        'centres'     => ['Gwagwalada Hub', 'Kubwa Hub'],
+        'category'    => 'Business',
+        'outline'     => ['Project lifecycle & scoping', 'Planning & scheduling', 'Risk & stakeholder management', 'Agile fundamentals', 'A real project simulation'],
+        'who_for'     => 'Professionals and teams who coordinate work and want a shared, practical methodology.',
+        'requirements'=> ['Open to working professionals and corporate teams'],
+    ],
+    [
+        'slug'        => 'networking-fundamentals',
+        'name'        => 'Networking Fundamentals',
+        'summary'     => 'Understand and configure the networks that everything else runs on — from cabling to cloud.',
+        'mode'        => 'Physical',
+        'duration'    => '9 weeks',
+        'centres'     => ['Kubwa Hub'],
+        'category'    => 'Technology',
+        'outline'     => ['Networking concepts & models', 'IP addressing & subnetting', 'Routers, switches & hands-on labs', 'Network security basics', 'Troubleshooting practicum'],
+        'who_for'     => 'Beginners aiming toward IT support or infrastructure roles.',
+        'requirements'=> ['Basic computer literacy'],
+    ],
+];

@@ -2,9 +2,14 @@
 
 **Unified Student, Training, Subscription & Company Management Platform**
 
-> **Status:** Phase 0 — Discovery. No production code written. See
-> [Working notes](#working-notes) at the end for local setup and repo workflow, and
-> `docs/` for the design system and UI reference.
+> **Status:** Phase 5 — Centres & Operations. Phases 2–3 (public website, UI/UX design
+> system) are UX/visual builds; **Phase 4 (Core Platform Foundation) and Phase 5
+> (Centres & Operations) are real, running production code** — a MySQL database,
+> session auth enforcing centre-scoped permissions, and working CRUD for centres,
+> programmes, cohorts, timetabling and attendance. See
+> `docs/architecture/09-core-foundation.md` and
+> `docs/architecture/10-centres-operations.md`. See [Working notes](#working-notes) at
+> the end for local setup, demo logins and repo workflow.
 
 ---
 
@@ -1528,6 +1533,14 @@ Light and dark themes are both first-class. Theme is a token swap driven by
   elevation, dark theme, gradients
 - `docs/UI-REFERENCE.md` — student dashboard reference decomposition, grid, component
   inventory, responsive strategy
+- `docs/architecture/07-public-website.md` — Phase 2 public website: pages built,
+  brand application, IA, what's real vs. placeholder content
+- `docs/architecture/08-ui-design-system.md` — Phase 3 UI/UX: shared component kit,
+  all 9 role dashboards, auth screens, what's real vs. placeholder content
+- `docs/architecture/09-core-foundation.md` — Phase 4: database, auth, permission
+  model, demo logins
+- `docs/architecture/10-centres-operations.md` — Phase 5: centres, programmes,
+  cohorts, timetabling, attendance
 
 ### Current scaffold
 
@@ -1538,21 +1551,29 @@ app/
   views/         page templates
 config/          app + database configuration
 database/
-  migrations/    schema changes, in order
-  seeds/         sample data
+  migrations/    schema changes, in order (20 files as of Phase 5)
+  migrate.php    runner — applies new migrations, tracked in a `migrations` table
+  seed.php       dev/demo data — roles, permissions, centres, users, programmes...
 public/          web root — the only folder the browser should reach
-  css/ js/ fonts/ uploads/
-docs/            design system and notes
+  css/ js/       shared site + app-shell stylesheets
+  app.php        authenticated-app front controller (?r=route.name)
+  login.php, register.php, logout.php
+docs/            design system, architecture docs and Phase 3 dashboard previews
 ```
 
-This is a placeholder structure from the initial commit. The final architecture is a
-Phase 1 deliverable and is expected to replace it.
+This scaffold is now live — Phase 4/5 code runs inside it directly (`app/core`,
+`app/models`, `app/controllers`, `app/views`), no framework swap happened.
 
 ### Local setup
 
-1. Copy `.env.example` to `.env` and fill in the database credentials.
-2. Visit `http://localhost/ultra/public`.
-3. Import the migrations in `database/migrations/` in filename order.
+1. Copy `.env.example` to `.env` — defaults match a stock XAMPP install (`root`, no
+   password, database `ultrademy`).
+2. Create the database: `mysql -u root -e "CREATE DATABASE ultrademy CHARACTER SET utf8mb4"`.
+3. Run migrations: `php database/migrate.php`.
+4. Seed demo data: `php database/seed.php` — prints the demo login list.
+5. Visit `http://localhost/ultra/public` for the marketing site, or
+   `http://localhost/ultra/public/login.php` to sign in (e.g. `super@ultrademy.com` /
+   `Password123!`) and reach the authenticated app at `public/app.php`.
 
 ### Pushing changes
 

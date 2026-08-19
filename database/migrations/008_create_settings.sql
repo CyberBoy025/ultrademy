@@ -1,0 +1,9 @@
+CREATE TABLE IF NOT EXISTS settings (
+    id         BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    `key`      VARCHAR(100) NOT NULL,
+    value      JSON NOT NULL,
+    `group`    VARCHAR(50) NOT NULL DEFAULT 'general',
+    is_public  TINYINT(1) NOT NULL DEFAULT 0,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uq_settings_key (`key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

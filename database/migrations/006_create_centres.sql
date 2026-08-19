@@ -1,0 +1,20 @@
+CREATE TABLE IF NOT EXISTS centres (
+    id                BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    code              VARCHAR(20) NOT NULL,
+    name              VARCHAR(150) NOT NULL,
+    slug              VARCHAR(150) NOT NULL,
+    address_line      VARCHAR(255) NULL,
+    city              VARCHAR(100) NULL,
+    state             VARCHAR(100) NULL,
+    latitude          DECIMAL(10,7) NULL,
+    longitude         DECIMAL(10,7) NULL,
+    phone             VARCHAR(32) NULL,
+    email             VARCHAR(255) NULL,
+    manager_user_id   BIGINT UNSIGNED NULL,
+    status            ENUM('active','inactive','planned') NOT NULL DEFAULT 'planned',
+    created_at        TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at        TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uq_centres_code (code),
+    UNIQUE KEY uq_centres_slug (slug),
+    CONSTRAINT fk_centres_manager FOREIGN KEY (manager_user_id) REFERENCES users(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

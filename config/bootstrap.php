@@ -68,3 +68,18 @@ if (config('app.debug')) {
     error_reporting(E_ALL & ~E_DEPRECATED);
     ini_set('display_errors', '0');
 }
+
+date_default_timezone_set('Africa/Lagos');
+
+// --- autoloader ------------------------------------------------------------
+// No namespaces yet — classes are looked up by convention across the three
+// app/ subfolders. Simple on purpose; revisit if the app grows past this.
+spl_autoload_register(function (string $class) use ($root): void {
+    foreach (['core', 'models', 'controllers'] as $dir) {
+        $path = "$root/app/$dir/$class.php";
+        if (is_file($path)) {
+            require $path;
+            return;
+        }
+    }
+});

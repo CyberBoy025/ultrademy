@@ -15,6 +15,10 @@ is written until this is signed off.
 | 04 | [Subscriptions & Entitlements](04-subscriptions-entitlements.md) | 6, 7 |
 | 05 | [Finance, Payments & Audit](05-finance-payments.md) | 26–31, 39 |
 | 06 | [API, Notifications & Reporting](06-api-notifications.md) | 37, 38, 41 |
+| 07 | [Phase 2 — Brand + Public Website](07-public-website.md) | 53–80 |
+| 08 | [Phase 3 — UI/UX Design System](08-ui-design-system.md) | 44, 49, 4 |
+| 09 | [Phase 4 — Core Platform Foundation](09-core-foundation.md) | 4, 5, 49 |
+| 10 | [Phase 5 — Centres & Operations](10-centres-operations.md) | 9, 12–17, 21–22 |
 
 Design system and UI decomposition live one level up in `docs/`.
 
@@ -49,14 +53,14 @@ what is being migrated from.
 Grouped by when they become blocking. Items marked **schema** change table columns and
 are cheapest to answer now.
 
-### Before Phase 4 (Core Foundation)
+### Before Phase 4 (Core Foundation) — resolved
 
-| # | Question | Default if unanswered |
+| # | Question | Answer |
 |---|---|---|
-| 1 | Laravel 11, or vanilla PHP? | **Laravel** |
-| 2 | NGN only, or multi-currency? *(schema)* | NGN, `currency` column retained |
-| 4 | Expected concurrent users in year one? | 500 |
-| 10 | Is the accountant role global, or scoped per centre? | Global |
+| 1 | Laravel 11, or vanilla PHP? | **Vanilla PHP** — chosen explicitly, overriding this doc's stated default; see [09-core-foundation.md](09-core-foundation.md) §7 |
+| 2 | NGN only, or multi-currency? *(schema)* | NGN — default taken, `currency` column retained |
+| 4 | Expected concurrent users in year one? | 500 — default taken |
+| 10 | Is the accountant role global, or scoped per centre? | Global — default taken, seeded accordingly |
 
 ### Before Phase 6 (Subscriptions)
 
@@ -142,10 +146,13 @@ financial record-keeping obligations.
 
 ## What happens next
 
-On approval, Phase 2 (Brand + Public Website UX) and Phase 3 (UI/UX Design System)
-proceed. The student dashboard preview in `docs/preview/` is an early Phase 3 artifact
-and covers one of the nine role dashboards in §44 — the remaining eight are Phase 3
-work.
+Phases 2 and 3 (Brand + Public Website, UI/UX Design System) shipped as static
+markup and demo data. Phases 4 and 5 (Core Platform Foundation, Centres & Operations —
+[09](09-core-foundation.md), [10](10-centres-operations.md)) are the first to write
+production code: a real MySQL database (20 migrations), session-based auth enforcing
+the exact permission/scope model from [03-rbac.md](03-rbac.md), and working CRUD for
+centres, rooms, staff, programmes, cohorts, timetabling and attendance — all verified
+against real logins, not just described.
 
-Phase 4 (Core Foundation) is the first phase that writes production code, and it is
-blocked on Decision 1.
+Next up per the revised roadmap (§80): **Phase 6 — Subscriptions & Entitlements**,
+blocked on Decisions 12–16 above.

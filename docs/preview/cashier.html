@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UltrAdemy — Cashier Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/shell.css">
+<script>(function(){try{var t=localStorage.getItem('ultrademy.theme');document.documentElement.setAttribute('data-theme',t==='dark'?'dark':'light');}catch(e){}})();</script>
+</head>
+<body>
+
+<button class="appearance" id="themeToggle" aria-pressed="false" aria-label="Switch appearance">
+  <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"/></svg>
+  <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4"/></svg>
+</button>
+
+<div class="shell no-rail">
+  <!-- ================= SIDEBAR ================= -->
+  <aside class="side">
+    <button class="prof">
+      <span class="pfp" aria-hidden="true">TB</span>
+      <span class="prof-t">
+        <span class="prof-n">Tunde Bakare</span>
+        <span class="cap" style="display:block">Cashier — Gwagwalada Hub</span>
+      </span>
+      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+
+    <nav class="nav" aria-label="Main">
+      <button aria-current="page">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+        <span>Dashboard</span>
+      </button>
+      <button>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><rect x="2" y="4" width="20" height="14" rx="2"/><path d="M2 8h20"/></svg>
+        <span>Payments</span>
+      </button>
+      <button>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg>
+        <span>Invoices</span>
+      </button>
+      <button>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M9 12h6M9 16h6M9 8h6"/><rect x="4" y="3" width="16" height="18" rx="2"/></svg>
+        <span>Receipts</span>
+      </button>
+      <button>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+        <span>Daily Transactions</span>
+      </button>
+    </nav>
+
+    <div class="rule"></div>
+    <div class="meta">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+      <span>Shift</span><span class="v">Open</span>
+    </div>
+    <div class="meta">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>
+      <span>Centre</span><span class="v">Gwagwalada</span>
+    </div>
+
+    <div class="promo">
+      <div class="top"><span>Awaiting Verification</span></div>
+      <h4>5 Manual Transfers</h4>
+      <span class="lnk">Review now</span>
+      <span class="rk" aria-hidden="true">🧾</span>
+    </div>
+  </aside>
+
+  <!-- ================= MAIN ================= -->
+  <main>
+    <div class="topbar">
+      <div>
+        <h1>Cashier Desk</h1>
+        <p>Gwagwalada Hub · Shift opened 8:02 AM</p>
+      </div>
+      <div class="actions">
+        <button class="btn">Close Shift</button>
+        <button class="btn primary">+ Record Payment</button>
+      </div>
+    </div>
+
+    <div class="kpi-grid">
+      <div class="card kpi-card">
+        <div class="top"><span class="lab">Today's Collections</span><div class="kpi-ico c"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><rect x="2" y="4" width="20" height="14" rx="2"/><path d="M2 8h20"/></svg></div></div>
+        <span class="val">₦412,500</span>
+        <span class="kpi-delta up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 17 17 7M7 7h10v10"/></svg> 18 transactions</span>
+      </div>
+      <div class="card kpi-card">
+        <div class="top"><span class="lab">Pending Verification</span><div class="kpi-ico m"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 2"/></svg></div></div>
+        <span class="val">5</span>
+        <span class="cap">Manual bank transfers</span>
+      </div>
+      <div class="card kpi-card">
+        <div class="top"><span class="lab">Receipts Issued</span><div class="kpi-ico c"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M9 12h6M9 16h6M9 8h6"/><rect x="4" y="3" width="16" height="18" rx="2"/></svg></div></div>
+        <span class="val">18</span>
+        <span class="cap">Today</span>
+      </div>
+      <div class="card kpi-card">
+        <div class="top"><span class="lab">Cash on Hand</span><div class="kpi-ico m"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M8.5 9.5c0-1.4 1.6-2.5 3.5-2.5s3.5 1 3.5 2.2c0 3-7 1.3-7 4.3 0 1.3 1.6 2.3 3.5 2.3s3.5-1 3.5-2.3"/></svg></div></div>
+        <span class="val">₦86,000</span>
+        <span class="cap">To reconcile at close</span>
+      </div>
+    </div>
+
+    <h2 class="sec-title">Today's Transactions <a class="link" href="#">View all →</a></h2>
+    <div class="card">
+      <div class="table-wrap">
+        <table class="dt">
+          <thead><tr><th>Student</th><th>Programme / Fee</th><th>Method</th><th>Time</th><th>Amount</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td><span class="cell-main">Ada Nwachukwu</span></td><td>Web Development — Fee</td><td>POS</td><td>9:12 AM</td><td>₦45,000</td><td><span class="status-pill success">Completed</span></td></tr>
+            <tr><td><span class="cell-main">Chuka Eze</span></td><td>Data Analysis — Instalment</td><td>Cash</td><td>9:40 AM</td><td>₦20,000</td><td><span class="status-pill success">Completed</span></td></tr>
+            <tr><td><span class="cell-main">Fatima Bello</span></td><td>Digital Marketing — Fee</td><td>Bank Transfer</td><td>10:15 AM</td><td>₦35,000</td><td><span class="status-pill warning">Awaiting Verification</span></td></tr>
+            <tr><td><span class="cell-main">Peter Nkemdirim</span></td><td>Graphic Design — Fee</td><td>Cash</td><td>11:02 AM</td><td>₦30,000</td><td><span class="status-pill success">Completed</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <h2 class="sec-title">Manual Transfers Awaiting Verification</h2>
+    <div class="card">
+      <div class="queue">
+        <div class="queue-item">
+          <div class="queue-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><rect x="2" y="4" width="20" height="14" rx="2"/><path d="M2 8h20"/></svg></div>
+          <div class="queue-t"><h4>Fatima Bello — ₦35,000</h4><p>Ref: TRX-88213 · Submitted 10:15 AM</p></div>
+          <div class="queue-actions"><button class="btn sm">Reject</button><button class="btn sm primary">Verify</button></div>
+        </div>
+        <div class="queue-item">
+          <div class="queue-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><rect x="2" y="4" width="20" height="14" rx="2"/><path d="M2 8h20"/></svg></div>
+          <div class="queue-t"><h4>Emeka Uche — ₦50,000</h4><p>Ref: TRX-88220 · Submitted 10:52 AM</p></div>
+          <div class="queue-actions"><button class="btn sm">Reject</button><button class="btn sm primary">Verify</button></div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="assets/shell.js"></script>
+</body>
+</html>

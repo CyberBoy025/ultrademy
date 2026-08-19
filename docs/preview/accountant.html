@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UltrAdemy — Accountant Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/shell.css">
+<script>(function(){try{var t=localStorage.getItem('ultrademy.theme');document.documentElement.setAttribute('data-theme',t==='dark'?'dark':'light');}catch(e){}})();</script>
+</head>
+<body>
+
+<button class="appearance" id="themeToggle" aria-pressed="false" aria-label="Switch appearance">
+  <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"/></svg>
+  <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4"/></svg>
+</button>
+
+<div class="shell">
+  <!-- ================= SIDEBAR ================= -->
+  <aside class="side">
+    <button class="prof">
+      <span class="pfp" aria-hidden="true">IC</span>
+      <span class="prof-t">
+        <span class="prof-n">Ifeoma Chukwu</span>
+        <span class="cap" style="display:block">Accountant</span>
+      </span>
+      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+
+    <nav class="nav" aria-label="Main">
+      <button aria-current="page">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+        <span>Finance Overview</span>
+      </button>
+      <button>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><rect x="2" y="4" width="20" height="14" rx="2"/><path d="M2 8h20"/></svg>
+        <span>Payments</span>
+      </button>
+      <button>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 15l4-5 4 3 5-7"/></svg>
+        <span>Expenses</span>
+      </button>
+      <button>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><rect x="2" y="4" width="20" height="14" rx="2"/><path d="M2 8h20"/></svg>
+        <span>Manual Transfers</span><span class="badge">7</span>
+      </button>
+      <button>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+        <span>Reconciliation</span>
+      </button>
+      <button>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg>
+        <span>Reports</span>
+      </button>
+    </nav>
+
+    <div class="rule"></div>
+    <div class="meta">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v10"/></svg>
+      <span>Scope</span><span class="v">Global</span>
+    </div>
+    <div class="meta">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+      <span>Reconciled</span><span class="v">Aug 18</span>
+    </div>
+
+    <div class="promo">
+      <div class="top"><span>Awaiting Review</span></div>
+      <h4>7 Transfers</h4>
+      <span class="lnk">Verify now</span>
+      <span class="rk" aria-hidden="true">📑</span>
+    </div>
+  </aside>
+
+  <!-- ================= MAIN ================= -->
+  <main>
+    <div class="topbar">
+      <div>
+        <h1>Finance Overview</h1>
+        <p>All centres · Month to date</p>
+      </div>
+      <div class="actions">
+        <button class="btn">Export Report</button>
+      </div>
+    </div>
+
+    <div class="kpi-grid">
+      <div class="card kpi-card">
+        <div class="top"><span class="lab">Total Revenue (MTD)</span><div class="kpi-ico c"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M8.5 9.5c0-1.4 1.6-2.5 3.5-2.5s3.5 1 3.5 2.2c0 3-7 1.3-7 4.3 0 1.3 1.6 2.3 3.5 2.3s3.5-1 3.5-2.3"/></svg></div></div>
+        <span class="val">₦8.4M</span>
+        <span class="kpi-delta up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 17 17 7M7 7h10v10"/></svg> +12% vs last month</span>
+      </div>
+      <div class="card kpi-card">
+        <div class="top"><span class="lab">Expenses (MTD)</span><div class="kpi-ico m"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 15l4-5 4 3 5-7"/></svg></div></div>
+        <span class="val">₦2.1M</span>
+        <span class="cap">Centre operations, staff</span>
+      </div>
+      <div class="card kpi-card">
+        <div class="top"><span class="lab">Outstanding Balances</span><div class="kpi-ico m"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 2"/></svg></div></div>
+        <span class="val">₦1.6M</span>
+        <span class="cap">Across 34 students</span>
+      </div>
+      <div class="card kpi-card">
+        <div class="top"><span class="lab">Pending Manual Transfers</span><div class="kpi-ico c"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><rect x="2" y="4" width="20" height="14" rx="2"/><path d="M2 8h20"/></svg></div></div>
+        <span class="val">7</span>
+        <span class="cap">Awaiting verification</span>
+      </div>
+    </div>
+
+    <div class="row row-a">
+      <div class="card">
+        <div class="chead">
+          <h3>Revenue vs Expenses</h3>
+          <button class="drop">Last 7 Weeks <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke-linecap="round"/></svg></button>
+        </div>
+        <svg viewBox="0 0 330 170" width="100%" height="170" class="ax" role="img" aria-label="Revenue and expenses over seven weeks">
+          <line class="gl" x1="26" y1="18" x2="325" y2="18"/><line class="gl" x1="26" y1="53" x2="325" y2="53"/>
+          <line class="gl" x1="26" y1="88" x2="325" y2="88"/><line class="gl" x1="26" y1="123" x2="325" y2="123"/>
+          <text x="4" y="21">10M</text><text x="4" y="56">7M</text><text x="4" y="91">4M</text><text x="4" y="126">1M</text>
+          <rect x="42" y="60" width="15" height="85" rx="5" fill="#22C7E3"/><rect x="60" y="110" width="15" height="35" rx="5" fill="#FF00FF"/>
+          <rect x="97" y="45" width="15" height="100" rx="5" fill="#22C7E3"/><rect x="115" y="105" width="15" height="40" rx="5" fill="#FF00FF"/>
+          <rect x="152" y="52" width="15" height="93" rx="5" fill="#22C7E3"/><rect x="170" y="115" width="15" height="30" rx="5" fill="#FF00FF"/>
+          <rect x="207" y="30" width="15" height="115" rx="5" fill="#22C7E3"/><rect x="225" y="108" width="15" height="37" rx="5" fill="#FF00FF"/>
+          <rect x="262" y="20" width="15" height="125" rx="5" fill="#22C7E3"/><rect x="280" y="100" width="15" height="45" rx="5" fill="#FF00FF"/>
+        </svg>
+        <div class="legend left"><div><span class="dot" style="background:#22C7E3"></span>Revenue</div><div><span class="dot" style="background:#FF00FF"></span>Expenses</div></div>
+      </div>
+
+      <div class="card">
+        <div class="chead"><h3>Revenue by Centre</h3></div>
+        <div class="donut">
+          <svg viewBox="0 0 150 150" width="132" height="132" role="img" aria-label="Revenue split by centre">
+            <circle cx="75" cy="75" r="58" fill="none" stroke="var(--track)" stroke-width="19"/>
+            <circle cx="75" cy="75" r="58" fill="none" stroke="#22C7E3" stroke-width="19" stroke-dasharray="180 400" transform="rotate(-90 75 75)"/>
+            <circle cx="75" cy="75" r="58" fill="none" stroke="#FF00FF" stroke-width="19" stroke-dasharray="140 440" transform="rotate(72 75 75)"/>
+          </svg>
+          <div class="mid"><b>₦8.4M</b><span class="cap">total</span></div>
+        </div>
+        <div class="legend"><div><span class="dot" style="background:#22C7E3"></span>Gwagwalada</div><div><span class="dot" style="background:#FF00FF"></span>Kubwa</div><div><span class="dot" style="background:var(--track)"></span>Online</div></div>
+      </div>
+    </div>
+
+    <h2 class="sec-title">Manual Transfers Awaiting Verification</h2>
+    <div class="card">
+      <div class="table-wrap">
+        <table class="dt">
+          <thead><tr><th>Student</th><th>Reference</th><th>Centre</th><th>Amount</th><th>Submitted</th><th></th></tr></thead>
+          <tbody>
+            <tr><td><span class="cell-main">Fatima Bello</span></td><td>TRX-88213</td><td>Gwagwalada</td><td>₦35,000</td><td>Today, 10:15 AM</td><td><button class="btn sm primary">Verify</button></td></tr>
+            <tr><td><span class="cell-main">Emeka Uche</span></td><td>TRX-88220</td><td>Gwagwalada</td><td>₦50,000</td><td>Today, 10:52 AM</td><td><button class="btn sm primary">Verify</button></td></tr>
+            <tr><td><span class="cell-main">Grace Ilo</span></td><td>TRX-88245</td><td>Kubwa</td><td>₦40,000</td><td>Yesterday</td><td><button class="btn sm primary">Verify</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- ================= RIGHT RAIL ================= -->
+  <aside class="rail">
+    <div class="card">
+      <div class="chead"><h3>Outstanding Balances</h3></div>
+      <div class="queue">
+        <div class="queue-item"><div class="queue-t"><h4>Web Development cohort</h4><p>12 students · ₦540,000</p></div></div>
+        <div class="queue-item"><div class="queue-t"><h4>Data Analysis cohort</h4><p>9 students · ₦380,000</p></div></div>
+        <div class="queue-item"><div class="queue-t"><h4>Digital Marketing cohort</h4><p>13 students · ₦680,000</p></div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="chead"><h3>Quick Actions</h3></div>
+      <div class="qa-grid">
+        <div class="qa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><rect x="2" y="4" width="20" height="14" rx="2"/><path d="M2 8h20"/></svg><span>Verify Transfer</span></div>
+        <div class="qa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg><span>Generate Report</span></div>
+        <div class="qa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span>Reconcile</span></div>
+        <div class="qa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M3 3v18h18"/></svg><span>Record Expense</span></div>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<script src="assets/shell.js"></script>
+</body>
+</html>

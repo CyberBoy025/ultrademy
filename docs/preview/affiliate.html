@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UltrAdemy — Affiliate Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/shell.css">
+<script>(function(){try{var t=localStorage.getItem('ultrademy.theme');document.documentElement.setAttribute('data-theme',t==='dark'?'dark':'light');}catch(e){}})();</script>
+</head>
+<body>
+
+<button class="appearance" id="themeToggle" aria-pressed="false" aria-label="Switch appearance">
+  <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"/></svg>
+  <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4"/></svg>
+</button>
+
+<div class="shell">
+  <!-- ================= SIDEBAR ================= -->
+  <aside class="side">
+    <button class="prof">
+      <span class="pfp" aria-hidden="true">MO</span>
+      <span class="prof-t">
+        <span class="prof-n">Michael Okoro</span>
+        <span class="cap" style="display:block">Affiliate</span>
+      </span>
+      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+
+    <nav class="nav" aria-label="Main">
+      <button aria-current="page">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+        <span>Dashboard</span>
+      </button>
+      <button>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="9" cy="7" r="4"/><path d="M2 21c0-4.4 3.6-8 7-8s7 3.6 7 8"/><circle cx="17" cy="7" r="3"/><path d="M23 21c0-3.3-2-6-5-7.5"/></svg>
+        <span>My Referrals</span><span class="badge">14</span>
+      </button>
+      <button>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 15l4-5 4 3 5-7"/></svg>
+        <span>Performance</span>
+      </button>
+      <button>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M8.5 9.5c0-1.4 1.6-2.5 3.5-2.5s3.5 1 3.5 2.2c0 3-7 1.3-7 4.3 0 1.3 1.6 2.3 3.5 2.3s3.5-1 3.5-2.3"/></svg>
+        <span>Commissions</span>
+      </button>
+      <button>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><rect x="2" y="4" width="20" height="14" rx="2"/><path d="M2 8h20"/></svg>
+        <span>Payouts</span>
+      </button>
+    </nav>
+
+    <div class="rule"></div>
+    <div class="meta">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 15a6 6 0 100-12 6 6 0 000 12z"/><path d="M9 14l-1 7 4-2 4 2-1-7"/></svg>
+      <span>Status</span><span class="v">Active</span>
+    </div>
+    <div class="meta">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M8.5 9.5c0-1.4 1.6-2.5 3.5-2.5s3.5 1 3.5 2.2c0 3-7 1.3-7 4.3 0 1.3 1.6 2.3 3.5 2.3s3.5-1 3.5-2.3"/></svg>
+      <span>Rate</span><span class="v">10%</span>
+    </div>
+
+    <div class="promo">
+      <div class="top"><span>Your Link</span></div>
+      <h4>Share &amp; Earn</h4>
+      <span class="lnk">Copy referral link</span>
+      <span class="rk" aria-hidden="true">🔗</span>
+    </div>
+  </aside>
+
+  <!-- ================= MAIN ================= -->
+  <main>
+    <section class="hero">
+      <div class="hero-txt">
+        <h1>Welcome back,<br>Michael.</h1>
+        <p class="em">ultrademy.com/r/mokoro14</p>
+        <button class="hero-cta">Copy Referral Link</button>
+      </div>
+      <div class="hero-img"><span>Affiliate<br>photograph</span></div>
+    </section>
+
+    <h2 class="sec-title">Overview</h2>
+    <div class="kpi-grid">
+      <div class="card kpi-card">
+        <div class="top"><span class="lab">Total Referrals</span><div class="kpi-ico c"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="9" cy="7" r="4"/><path d="M2 21c0-4.4 3.6-8 7-8s7 3.6 7 8"/></svg></div></div>
+        <span class="val">14</span>
+        <span class="kpi-delta up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 17 17 7M7 7h10v10"/></svg> +3 this month</span>
+      </div>
+      <div class="card kpi-card">
+        <div class="top"><span class="lab">Qualified</span><div class="kpi-ico m"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></div></div>
+        <span class="val">9</span>
+        <span class="cap">Completed a paid enrolment</span>
+      </div>
+      <div class="card kpi-card">
+        <div class="top"><span class="lab">Commission Earned</span><div class="kpi-ico c"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M8.5 9.5c0-1.4 1.6-2.5 3.5-2.5s3.5 1 3.5 2.2c0 3-7 1.3-7 4.3 0 1.3 1.6 2.3 3.5 2.3s3.5-1 3.5-2.3"/></svg></div></div>
+        <span class="val">₦63,000</span>
+        <span class="cap">Lifetime, before payout</span>
+      </div>
+      <div class="card kpi-card">
+        <div class="top"><span class="lab">Pending Payout</span><div class="kpi-ico m"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><rect x="2" y="4" width="20" height="14" rx="2"/><path d="M2 8h20"/></svg></div></div>
+        <span class="val">₦18,000</span>
+        <span class="cap">Next payout cycle</span>
+      </div>
+    </div>
+
+    <h2 class="sec-title">My Referrals</h2>
+    <div class="card">
+      <div class="table-wrap">
+        <table class="dt">
+          <thead><tr><th>Name</th><th>Joined</th><th>Programme</th><th>Status</th><th>Commission</th></tr></thead>
+          <tbody>
+            <tr><td><span class="cell-main">Blessing Eze</span><span class="cell-sub">blessing@example.com</span></td><td>3 Aug 2026</td><td>Web Development</td><td><span class="status-pill success">Qualified</span></td><td>₦7,000</td></tr>
+            <tr><td><span class="cell-main">Kelvin Musa</span><span class="cell-sub">kelvin@example.com</span></td><td>11 Aug 2026</td><td>Data Analysis</td><td><span class="status-pill success">Qualified</span></td><td>₦6,000</td></tr>
+            <tr><td><span class="cell-main">Rita Obi</span><span class="cell-sub">rita@example.com</span></td><td>15 Aug 2026</td><td>Digital Marketing</td><td><span class="status-pill warning">Pending</span></td><td>—</td></tr>
+            <tr><td><span class="cell-main">Samuel Danjuma</span><span class="cell-sub">samuel@example.com</span></td><td>17 Aug 2026</td><td>Graphic Design</td><td><span class="status-pill neutral">Registered</span></td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- ================= RIGHT RAIL ================= -->
+  <aside class="rail">
+    <div class="card">
+      <div class="chead"><h3>Share Your Link</h3></div>
+      <div class="drop" style="width:100%;justify-content:space-between;padding:11px 12px;margin-bottom:10px">ultrademy.com/r/mokoro14
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 012-2h10"/></svg>
+      </div>
+      <button class="btn primary" style="width:100%;justify-content:center">Copy Link</button>
+    </div>
+
+    <div class="card">
+      <div class="chead"><h3>Commission Breakdown</h3></div>
+      <div class="donut">
+        <svg viewBox="0 0 150 150" width="132" height="132" role="img" aria-label="Commission by programme">
+          <circle cx="75" cy="75" r="58" fill="none" stroke="var(--track)" stroke-width="19"/>
+          <circle cx="75" cy="75" r="58" fill="none" stroke="#22C7E3" stroke-width="19" stroke-dasharray="180 400" transform="rotate(-90 75 75)"/>
+          <circle cx="75" cy="75" r="58" fill="none" stroke="#FF00FF" stroke-width="19" stroke-dasharray="90 460" transform="rotate(72 75 75)"/>
+        </svg>
+        <div class="mid"><b>₦63k</b><span class="cap">earned</span></div>
+      </div>
+      <div class="legend"><div><span class="dot" style="background:#22C7E3"></span>Web Dev.</div><div><span class="dot" style="background:#FF00FF"></span>Data Analysis</div><div><span class="dot" style="background:var(--track)"></span>Other</div></div>
+    </div>
+
+    <div class="card">
+      <div class="chead"><h3>Payout History</h3></div>
+      <div class="queue">
+        <div class="queue-item"><div class="queue-t"><h4>₦45,000</h4><p>Paid — 1 Jul 2026</p></div><span class="status-pill success">Paid</span></div>
+        <div class="queue-item"><div class="queue-t"><h4>₦18,000</h4><p>Scheduled — next cycle</p></div><span class="status-pill warning">Pending</span></div>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<script src="assets/shell.js"></script>
+</body>
+</html>
