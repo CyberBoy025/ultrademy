@@ -28,6 +28,39 @@ records and payment data. `Session::start()` takes the cookie name for exactly t
 value changes — nothing in code hard-codes either form, because links go through
 `careers_url()`.
 
+### 1.1 Visual identity: the public site's template, not a third one
+
+Careers shipped with its own design system — Fraunces/Manrope, a deep-green accent, a
+sage ground — on the reasoning that it is not the LMS. That reasoning was half right. It
+is not the LMS, but it *is* the public marketing site: the same anonymous visitor, the
+same first impression, reached by a link in the ultrademy.com footer. Three design
+systems for two audiences was one too many, and the odd one out was the surface a
+stranger sees first.
+
+So careers now wears the marketing template. Every careers page loads
+[`public/css/site.css`](../../public/css/site.css) — the same tokens, type scale, buttons,
+cards and `[data-theme]` swap the marketing site uses — followed by
+[`public/careers/css/careers.css`](../../public/careers/css/careers.css), which was
+rewritten from a 244-line parallel design system into a ~190-line **add-on**: no `:root`
+block, no fonts, no palette, only the dozen-odd components a brochure site never needed
+(flash messages, the profile wizard rail, the application status track, list rows, data
+tables, the auth split-screen, long-form job-description prose). The chrome is
+`.site-header` / `.site-footer` carrying a careers nav, and `public/js/site.js` is loaded
+rather than copied so the theme toggle writes the **same** `localStorage['ultrademy.theme']`
+key — toggle dark on careers and ultrademy.com is already dark.
+
+Rejected: copying `site.css` into `careers/css/`. It saves one request and duplicates the
+token block with no build step to keep the copies honest — which is exactly how careers
+drifted from the marketing site the first time.
+
+One behaviour changed. The old `careers.css` honoured `prefers-color-scheme`; `site.css`
+does not, being purely `[data-theme]`-driven with a light default. An OS-dark visitor who
+has never touched the toggle now gets light careers pages — the same as ultrademy.com.
+
+What did **not** change is the separation that matters: careers still has its own session
+cookie, its own login, and never renders `View::shell()`. Looking like the marketing site
+is a presentation decision; it grants no access.
+
 ## 2. Data model
 
 Grouped by what they are for:

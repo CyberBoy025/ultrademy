@@ -116,6 +116,26 @@ button,input,textarea,select{font-family:inherit;font-size:inherit;color:inherit
 .brand{display:flex;align-items:center;gap:10px;font-family:var(--font-primary);font-weight:700;font-size:19px}
 .brand-mark{width:34px;height:34px;border-radius:10px;background:var(--gradient-brand);display:grid;place-items:center;flex:none}
 .brand-mark span{color:#fff;font-weight:800;font-size:15px}
+
+/* Brand logo. Two files rather than one, because the wordmark's "Ademy" is solid
+   ink: black-logo reads on light surfaces, white-logo on dark. Swapped by CSS on
+   [data-theme] — the same mechanism as every other token here, so the pre-paint
+   script in each page's <head> settles it before first paint and neither version
+   flashes. Both images carry alt="" and the accessible name sits on the enclosing
+   <a>, so a screen reader announces the brand once, not twice.
+   On a permanently dark panel (the auth split-screen's gradient), use white-logo
+   alone with neither modifier — there is nothing to swap.
+   The dark version also carries an inline style="display:none" in the markup, so
+   exactly one logo shows even when a stale copy of this stylesheet is cached —
+   the failure mode is "logo does not swap", never "both logos side by side".
+   Inline rather than the `hidden` attribute, because img{display:block} in the
+   reset above is an author rule and would beat the browser's [hidden] — and
+   that reset is present in every cached copy too. Un-hiding it therefore needs
+   !important, which is the one thing that outranks an inline declaration. */
+.brand-logo{display:block;height:32px;width:auto;flex:none}
+.brand-logo.on-dark{display:none}
+[data-theme="dark"] .brand-logo.on-light{display:none}
+[data-theme="dark"] .brand-logo.on-dark{display:block !important}
 .nav-main{display:flex;align-items:center;gap:32px}
 .nav-main a{font-family:var(--font-primary);font-weight:500;font-size:14px;color:var(--color-text-secondary);padding:6px 0;border-bottom:2px solid transparent}
 .nav-main a:hover{color:var(--color-text-primary)}

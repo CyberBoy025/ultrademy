@@ -10,8 +10,8 @@ later phases (see §5 below).
 
 | Area | File(s) |
 |---|---|
-| Shared brand tokens & components | [`public/css/site.css`](../../public/css/site.css) |
-| Shared nav / footer | [`app/views/partials/header.php`](../../app/views/partials/header.php), [`footer.php`](../../app/views/partials/footer.php) |
+| Shared brand tokens & components | [`public/css/site.css`](../../public/css/site.css) — also consumed by the careers portal ([16-careers-portal.md §1.1](16-careers-portal.md)) |
+| Shared nav / footer | [`app/views/partials/header.php`](../../app/views/partials/header.php), [`footer.php`](../../app/views/partials/footer.php) — careers rebuilds the same components in [`app/views/layout/careers.php`](../../app/views/layout/careers.php) rather than requiring these, because their hrefs are relative and careers sits one directory deeper |
 | Homepage | [`public/index.php`](../../public/index.php) |
 | Programme listing | [`public/programmes.php`](../../public/programmes.php) |
 | Programme detail | [`public/programme-detail.php`](../../public/programme-detail.php) |

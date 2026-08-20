@@ -3,6 +3,20 @@
 The single source of truth for colour, type, spacing and elevation. Every component
 reads from these tokens. Nothing hard-codes a hex value.
 
+### Surfaces
+
+Two stylesheets declare these tokens, one per surface:
+
+| Stylesheet | Surface |
+|---|---|
+| `public/css/site.css` | the public website **and the careers portal** |
+| `public/css/shell.css` | the authenticated app (LMS, admin, recruitment back office) |
+
+`public/careers/css/careers.css` is **not** a third system — it is a component add-on
+loaded after `site.css`, declaring no custom properties of its own. See
+`docs/architecture/16-careers-portal.md` §1.1 for why careers shares the public site's
+tokens rather than having its own.
+
 ---
 
 ## 1. Core palette
@@ -50,6 +64,33 @@ secondary data.
 > light surface uses `--magenta-600` or darker. Same discipline for cyan: `#22C7E3` on
 > white is ~1.9:1, so cyan text uses `--cyan-600`/`--cyan-700`; `#22C7E3` is a fill
 > colour with black or very dark text on top.
+
+### Logo
+
+Two files in `public/img/`, both 1080×210 transparent PNG (5.14:1):
+
+| File | Wordmark ink | Use on |
+|---|---|---|
+| `black-logo.png` | black | light surfaces |
+| `white-logo.png` | white | dark surfaces |
+
+The mark and the "Ultr" half of the wordmark are cyan in **both** files; only "Ademy"
+changes. Two consequences worth knowing before placing it:
+
+- **It is swapped by `[data-theme]`, not by `prefers-color-scheme`** — same mechanism as
+  every token here. Ship both `<img>` tags with `.brand-logo.on-light` / `.on-dark`; the
+  pre-paint script in each page's `<head>` settles which shows before first paint. Put
+  the accessible name on the enclosing `<a>` and `alt=""` on both images, so a screen
+  reader announces the brand once.
+- **Never place it on cyan.** The brand gradient runs 135°, so its top-left corner — the
+  usual home for a logo — is `--cyan-500`, and the cyan mark and "Ultr" disappear into
+  it. On a permanently dark panel use `white-logo.png` alone with neither modifier, and
+  keep the area behind it dark: see `.auth-brand-pane` in `public/careers/css/careers.css`
+  (dark ground, brand washed in from the far corners) and `.auth-side::before` in
+  `public/css/shell.css` (a corner scrim over the gradient).
+
+Rendered height is 32px in headers and footers. The source files are ~7× that, which is
+deliberate retina headroom.
 
 ---
 
