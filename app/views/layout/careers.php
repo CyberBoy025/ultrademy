@@ -76,7 +76,11 @@ $unread = $user ? Notify::unreadCount((int) $user['id'], 'recruitment') : 0;
         <span class="sr-only">Toggle dark mode</span>
       </button>
       <?php if ($user): ?>
-        <span class="nav-user"><?= View::e(trim(($user['first_name'] ?? '') . ' ' . ($user['last_name'] ?? '')) ?: $user['email']) ?></span>
+        <?php /* First name only, not the full name: this row already carries seven nav
+                 items inside a 1200px container, and a long full name ("System
+                 Administrator") pushed it past the edge, which showed up as nav labels
+                 breaking mid-word. The dashboard still greets them in full. */ ?>
+        <span class="nav-user"><?= View::e(($user['first_name'] ?? '') ?: (string) strstr((string) $user['email'], '@', true) ?: $user['email']) ?></span>
         <?php /* .btn-ghost, not .btn-secondary: site.css:142 hides .header-actions .btn-secondary
                  below 960px, which is acceptable for a Login link and not for Log Out. */ ?>
         <a class="btn btn-ghost btn-sm" href="logout.php">Log Out</a>
