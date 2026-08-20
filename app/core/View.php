@@ -30,8 +30,12 @@ final class View
     }
 
     /**
-     * Careers portal page — its own header/footer/nav, deliberately not the LMS shell
-     * (docs/architecture/16-careers-portal.md §3). $description feeds the SEO meta tag
+     * Careers portal page — the public marketing site's chrome (site.css tokens,
+     * .site-header/.site-footer, the shared theme toggle) carrying a careers nav, never
+     * the LMS shell (docs/architecture/16-careers-portal.md §1). Careers is the first
+     * surface a stranger reaches, so it should look like ultrademy.com rather than invent
+     * a third identity; the separation that matters — its own session cookie, its own
+     * login — is unaffected by what it looks like. $description feeds the SEO meta tag
      * (brief §43); pass '' on pages that don't need one (e.g. the applicant dashboard).
      */
     public static function careersShell(string $active, string $title, string $main, string $description = ''): void

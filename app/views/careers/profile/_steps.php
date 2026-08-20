@@ -13,15 +13,13 @@ $steps = [
 ];
 $pct = (int) ($profile['completion_pct'] ?? 0);
 ?>
-<div class="cw-wizard-head">
-  <div class="cw-wizard-progress-row">
-    <span>PROFILE COMPLETION</span>
-    <span><?= $pct ?>%</span>
-  </div>
-  <div class="cw-progress-track"><div class="cw-progress-fill" style="width:<?= $pct ?>%"></div></div>
-  <nav class="cw-wizard-steps" aria-label="Profile sections">
-    <?php foreach ($steps as $key => $s): ?>
-      <a href="app.php?r=<?= $s['route'] ?>" class="<?= $stepActive === $key ? 'is-active' : '' ?>"><?= View::e($s['label']) ?></a>
-    <?php endforeach; ?>
-  </nav>
+<div class="progress-row">
+  <span>Profile completion</span>
+  <span><?= $pct ?>%</span>
 </div>
+<div class="progress"><i style="width:<?= $pct ?>%"></i></div>
+<nav class="filters" aria-label="Profile sections">
+  <?php foreach ($steps as $key => $s): ?>
+    <a href="app.php?r=<?= $s['route'] ?>" class="chip <?= $stepActive === $key ? 'active' : '' ?>"><?= View::e($s['label']) ?></a>
+  <?php endforeach; ?>
+</nav>
