@@ -9,11 +9,16 @@ if (Auth::check()) {
 
 $error = null;
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    Csrf::requireValid();
     $email = trim((string) ($_POST['email'] ?? ''));
     $password = (string) ($_POST['password'] ?? '');
 
-    if ($email === '' || $password === '') {
+    if (!Csrf::verify()) {
+        // A tab left open long enough for PHP's session GC to reap it (session.gc_maxlifetime,
+        // 24 min by default) carries a token that no longer matches anything server-side.
+        // Re-rendering with a fresh one (Csrf::field() below) lets a single retry succeed,
+        // rather than dead-ending on Csrf::requireValid()'s bare 403 with no way back in.
+        $error = 'Your session expired. Please try again.';
+    } elseif ($email === '' || $password === '') {
         $error = 'Enter your email and password.';
     } elseif (Auth::attempt($email, $password)) {
         header('Location: app.php');
