@@ -51,8 +51,8 @@ $user       = Auth::check() ? Auth::user() : null;
 <header style="display:flex;align-items:center;justify-content:space-between;gap:16px;
   max-width:1080px;margin:0 auto;padding:20px 24px">
   <a href="app.php" style="display:flex;align-items:center;gap:10px" aria-label="UltrAdemy Affiliates — home">
-    <img src="../img/black-logo.png" alt="" width="78" height="32" class="on-light">
-    <img src="../img/white-logo.png" alt="" width="78" height="32" class="on-dark">
+    <img src="../img/black-logo.png" alt="" width="165" height="32" class="on-light">
+    <img src="../img/white-logo.png" alt="" width="165" height="32" class="on-dark">
     <span class="cap" style="font-weight:700;letter-spacing:.02em">Affiliates</span>
   </a>
   <?php if ($user): ?>
@@ -78,8 +78,8 @@ $user       = Auth::check() ? Auth::user() : null;
 
     <div>
       <a href="<?= View::e(app_url('index.php')) ?>" style="display:flex;align-items:center;gap:10px" aria-label="UltrAdemy — home">
-        <img src="../img/black-logo.png" alt="" width="78" height="32" class="on-light">
-        <img src="../img/white-logo.png" alt="" width="78" height="32" class="on-dark">
+        <img src="../img/black-logo.png" alt="" width="165" height="32" class="on-light">
+        <img src="../img/white-logo.png" alt="" width="165" height="32" class="on-dark">
       </a>
       <p class="cap" style="margin-top:12px;max-width:34ch">Practical training, digital learning and career-focused programmes — at our physical hubs and online.</p>
     </div>

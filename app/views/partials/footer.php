@@ -3,8 +3,8 @@
     <div class="footer-grid">
       <div class="footer-brand">
         <a class="brand" href="index.php" aria-label="UltrAdemy — home">
-          <img class="brand-logo on-light" src="img/black-logo.png" alt="" width="78" height="32">
-          <img class="brand-logo on-dark" src="img/white-logo.png" alt="" width="78" height="32" style="display:none">
+          <img class="brand-logo on-light" src="img/black-logo.png" alt="" width="165" height="32">
+          <img class="brand-logo on-dark" src="img/white-logo.png" alt="" width="165" height="32" style="display:none">
         </a>
         <p>Practical training, digital learning and career-focused programmes — at our physical hubs and online.</p>
         <div class="footer-social">
