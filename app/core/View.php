@@ -44,13 +44,17 @@ final class View
     }
 
     /**
-     * Affiliate portal page. Unlike careers, this wears the LMS shell's own chrome
-     * (shell.css) rather than the public site's — an affiliate is never a stranger, and
-     * affiliate/mine.php + affiliate/apply.php already use shell.css component classes
-     * (.card, .chead, .topbar). What's separate is the session and the URL, not the
-     * visual language, so there was no reason to rewrite either view.
+     * Affiliate portal page. Wears the LMS shell's own chrome (shell.css), not the
+     * public site's — even now that the portal has a public home page (a stranger CAN
+     * land here, same as careers), affiliate/mine.php and affiliate/apply.php already
+     * use shell.css component classes (.card, .chead, .topbar), and one visual
+     * language across the whole portal — home through dashboard — beats a jarring
+     * switch to a second one right after signing in. $description feeds the SEO meta
+     * tag on the public home page; pass '' on pages that don't need one.
+     *
+     * @param string $active 'home' or 'dashboard' — which nav item to highlight.
      */
-    public static function affiliateShell(string $title, string $main): void
+    public static function affiliateShell(string $active, string $title, string $main, string $description = ''): void
     {
         require dirname(__DIR__) . '/views/layout/affiliate.php';
     }

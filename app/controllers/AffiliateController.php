@@ -15,9 +15,27 @@ final class AffiliateController
 {
     // ------------------------------------------------------------ affiliate side
 
+    /**
+     * Public information page — what the programme is, how it works, the current
+     * rate. Same role as JobController::home() on the careers portal: the thing a
+     * visitor who is not signed in yet actually lands on.
+     */
+    public static function home(): void
+    {
+        $main = View::render('affiliate/home', [
+            'enabled'   => Affiliate::enabled(),
+            'rate'      => Affiliate::defaultRateBps(),
+            'minPayout' => Affiliate::minPayout(),
+            'cookieDays' => Affiliate::cookieDays(),
+        ]);
+        View::affiliateShell('home', 'Affiliate Programme', $main,
+            'Earn a commission for every person you refer to UltrAdemy who enrols or subscribes.');
+    }
+
     /** The signed-in user's own affiliate dashboard, or the application form. */
     public static function mine(): void
     {
+        self::requireLogin();
         $userId = (int) Auth::id();
         $affiliate = Affiliate::forUser($userId);
 
@@ -27,7 +45,7 @@ final class AffiliateController
                 'enabled'   => Affiliate::enabled(),
                 'rate'      => Affiliate::defaultRateBps(),
             ]);
-            View::affiliateShell('Affiliate Programme', $main);
+            View::affiliateShell('dashboard', 'Affiliate Programme', $main);
             return;
         }
 
@@ -41,11 +59,12 @@ final class AffiliateController
             'minPayout'   => Affiliate::minPayout(),
             'payable'     => Affiliate::payableBalance((int) $affiliate['id']),
         ]);
-        View::affiliateShell('Affiliate Programme', $main);
+        View::affiliateShell('dashboard', 'Affiliate Programme', $main);
     }
 
     public static function apply(): void
     {
+        self::requireLogin();
         Csrf::requireValid();
         $result = Affiliate::apply(
             (int) Auth::id(),
@@ -59,6 +78,19 @@ final class AffiliateController
         // controller (public/affiliate/app.php) now, never the main app.
         header('Location: app.php');
         exit;
+    }
+
+    /**
+     * Local rather than Auth::requireLogin(): that helper redirects to
+     * app_url('login.php'), the MAIN app's login on the main session, which is the
+     * wrong place to send someone back to this portal's own session.
+     */
+    private static function requireLogin(): void
+    {
+        if (!Auth::check()) {
+            header('Location: login.php');
+            exit;
+        }
     }
 
     // ---------------------------------------------------------------- staff side

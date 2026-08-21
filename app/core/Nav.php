@@ -228,9 +228,11 @@ final class Nav
         // its own front controller and its own session cookie, the same separation
         // careers has from the main app — so this is a cross-app link (affiliate_url()),
         // not an internal route, even though it is still the same account underneath.
+        // Straight to r=dashboard, not the portal's own public home — someone clicking
+        // this from inside their own sidebar already knows what the programme is.
         if (!Auth::isStaff() && Entitlements::can('affiliate_programme')) {
             $items[] = [
-                'key' => 'affiliate', 'label' => 'Affiliate', 'href' => affiliate_url('app.php'),
+                'key' => 'affiliate', 'label' => 'Affiliate', 'href' => affiliate_url('app.php?r=dashboard'),
                 'icon' => '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/>',
             ];
         }
