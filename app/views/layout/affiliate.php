@@ -36,6 +36,8 @@ $user       = Auth::check() ? Auth::user() : null;
   .on-dark{display:none}
   [data-theme="dark"] .on-light{display:none}
   [data-theme="dark"] .on-dark{display:block}
+  .aff-footer-grid{display:grid;grid-template-columns:1.4fr repeat(4,1fr);gap:24px}
+  @media (max-width:767px){ .aff-footer-grid{grid-template-columns:1fr 1fr;gap:28px 20px} }
 </style>
 <script>(function(){try{var t=localStorage.getItem('ultrademy.theme');document.documentElement.setAttribute('data-theme',t==='dark'?'dark':'light');}catch(e){}})();</script>
 </head>
@@ -69,11 +71,64 @@ $user       = Auth::check() ? Auth::user() : null;
   <?php endif; ?>
 
   <?= $main ?>
-
-  <p class="cap" style="text-align:center;margin:32px 0 8px">
-    <a href="<?= View::e(app_url('index.php')) ?>">UltrAdemy.com</a>
-  </p>
 </div>
+
+<footer style="border-top:1px solid var(--border);margin-top:40px">
+  <div class="aff-footer-grid" style="max-width:1080px;margin:0 auto;padding:36px 24px 20px">
+
+    <div>
+      <a href="<?= View::e(app_url('index.php')) ?>" style="display:flex;align-items:center;gap:10px" aria-label="UltrAdemy — home">
+        <img src="../img/black-logo.png" alt="" width="78" height="32" class="on-light">
+        <img src="../img/white-logo.png" alt="" width="78" height="32" class="on-dark">
+      </a>
+      <p class="cap" style="margin-top:12px;max-width:34ch">Practical training, digital learning and career-focused programmes — at our physical hubs and online.</p>
+    </div>
+
+    <div>
+      <div class="cap" style="font-weight:700;color:var(--text);margin-bottom:10px">Explore</div>
+      <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px">
+        <li><a class="cap" href="<?= View::e(app_url('programmes.php')) ?>">Programmes</a></li>
+        <li><a class="cap" href="<?= View::e(app_url('centres.php')) ?>">Centres</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <div class="cap" style="font-weight:700;color:var(--text);margin-bottom:10px">Company</div>
+      <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px">
+        <li><a class="cap" href="<?= View::e(app_url('about.php')) ?>">About</a></li>
+        <li><a class="cap" href="<?= View::e(app_url('contact.php')) ?>">Contact</a></li>
+        <li><a class="cap" href="<?= View::e(careers_url('')) ?>">Careers</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <div class="cap" style="font-weight:700;color:var(--text);margin-bottom:10px">Your account</div>
+      <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px">
+        <li><a class="cap" href="<?= View::e(app_url('app.php')) ?>">UltrAdemy Dashboard</a></li>
+        <li><a class="cap" href="<?= View::e(app_url('app.php?r=subscription')) ?>">My Subscription</a></li>
+        <li><a class="cap" href="logout.php">Log Out</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <div class="cap" style="font-weight:700;color:var(--text);margin-bottom:10px">Centres</div>
+      <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px">
+        <li><a class="cap" href="<?= View::e(app_url('centres.php#gwagwalada')) ?>">Gwagwalada Hub</a></li>
+        <li><a class="cap" href="<?= View::e(app_url('centres.php#kubwa')) ?>">Kubwa Hub</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div style="max-width:1080px;margin:0 auto;padding:16px 24px;border-top:1px solid var(--border);
+    display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px">
+    <span class="cap">&copy; <?= date('Y') ?> UltrAdemy. All rights reserved.</span>
+    <div style="display:flex;gap:16px">
+      <a class="cap" href="#">Privacy Policy</a>
+      <a class="cap" href="#">Terms &amp; Conditions</a>
+      <a class="cap" href="#">Cookie Policy</a>
+    </div>
+  </div>
+</footer>
 
 <script src="../js/shell.js"></script>
 </body>
