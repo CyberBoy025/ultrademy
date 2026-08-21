@@ -18,6 +18,7 @@ final class InterviewController
             echo 'Application not found.';
             return;
         }
+        self::assertInScope((int) $app['job_posting_id']);
 
         $type = isset(Interview::TYPES[$_POST['type'] ?? '']) ? $_POST['type'] : 'online';
         $panelistIds = array_map('intval', $_POST['panelist_ids'] ?? []);
@@ -60,6 +61,10 @@ final class InterviewController
             echo 'Interview not found.';
             return;
         }
+        $app = JobApplication::find((int) $interview['job_application_id']);
+        if ($app) {
+            self::assertInScope((int) $app['job_posting_id']);
+        }
         $newTime = trim((string) ($_POST['scheduled_at'] ?? ''));
         if ($newTime === '') {
             Session::flash('error', 'Choose a new date and time.');
@@ -69,7 +74,6 @@ final class InterviewController
         Interview::reschedule($id, $newTime);
         Audit::log('interview.rescheduled', 'interviews', $id, ['scheduled_at' => $interview['scheduled_at']], ['scheduled_at' => $newTime]);
 
-        $app = JobApplication::find((int) $interview['job_application_id']);
         $updated = Interview::find($id);
         $mail = EmailTemplate::render('interview_rescheduled', JobApplication::emailVars($app, $updated));
         Notify::send((int) $app['user_id'], 'interview.rescheduled', 'recruitment', $mail['subject'], $mail['body'], null);
@@ -91,6 +95,10 @@ final class InterviewController
             http_response_code(404);
             echo 'Interview not found.';
             return;
+        }
+        $appForScope = JobApplication::find((int) $interview['job_application_id']);
+        if ($appForScope) {
+            self::assertInScope((int) $appForScope['job_posting_id']);
         }
         $status = (string) ($_POST['status'] ?? '');
         if (!in_array($status, ['completed', 'cancelled'], true)) {
@@ -168,5 +176,26 @@ final class InterviewController
             exit;
         }
         return $interview;
+    }
+
+    /**
+     * recruitment.interview.manage is ◐ for `recruiter` — scoped to the centre(s) the
+     * job posting is open at, the same rule RecruitmentAdminController::loadInScopeOrDeny()
+     * already applies to the application itself. Scheduling/rescheduling/cancelling an
+     * interview reaches the application only indirectly (via job_application_id), so this
+     * check must be applied explicitly rather than inherited from a permission check alone.
+     */
+    private static function assertInScope(int $jobPostingId): void
+    {
+        $scope = Auth::scopeCentres('recruitment.interview.manage');
+        if ($scope === null) {
+            return;
+        }
+        $centreIds = array_column(JobPosting::centresFor($jobPostingId), 'id');
+        if (!array_intersect($centreIds, $scope)) {
+            http_response_code(403);
+            require dirname(__DIR__) . '/views/errors/403.php';
+            exit;
+        }
     }
 }
