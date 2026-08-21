@@ -117,10 +117,9 @@ match ($route) {
     'donations.campaigns.update'  => DonationController::updateCampaign(),
     'donations.campaigns.status'  => DonationController::campaignStatus(),
 
-    // Affiliate programme (README §25). `affiliate` is every signed-in user's own page —
-    // it shows the application form until they are approved.
-    'affiliate'                    => AffiliateController::mine(),
-    'affiliate.apply'              => AffiliateController::apply(),
+    // Affiliate programme (README §25). The affiliate's own pages — dashboard and
+    // application form — moved to their own portal (public/affiliate/), the same
+    // separation careers has from this app. Only the staff side stays here.
     'affiliate.admin'              => AffiliateController::index(),
     'affiliate.show'               => AffiliateController::show(),
     'affiliate.decide'             => AffiliateController::decide(),

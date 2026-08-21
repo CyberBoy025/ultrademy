@@ -188,7 +188,7 @@ final class Affiliate
                 default => 'Your affiliate application is under review',
             },
             $note !== '' ? $note : null,
-            'app.php?r=affiliate');
+            affiliate_url('app.php'));
 
         return '';
     }
@@ -326,7 +326,7 @@ final class Affiliate
                 Notify::send((int) $affiliate['user_id'], 'commission.earned', 'general',
                     'You earned a commission',
                     Money::format($amount, $payment['currency']) . ' from a referral, pending approval.',
-                    'app.php?r=affiliate');
+                    affiliate_url('app.php'));
             }
         } catch (PDOException $e) {
             // 1062 = the UNIQUE on payment_id, i.e. a replayed webhook. Expected, ignored.
@@ -515,7 +515,7 @@ final class Affiliate
             Notify::send((int) $affiliate['user_id'], 'affiliate.paid', 'payment',
                 'Your commission has been paid',
                 Money::format((int) $p['amount'], $p['currency']) . ' has been sent.',
-                'app.php?r=affiliate');
+                affiliate_url('app.php'));
         }
         return '';
     }

@@ -92,6 +92,13 @@ $GLOBALS['ultrademy_config'] = [
     'careers' => [
         'url' => env('CAREERS_URL') ?: (rtrim((string) (env('APP_URL') ?: ultrademy_detect_base_url($root)), '/') . '/careers'),
     ],
+    // Same pattern as `careers` above: a third front controller with its own base URL
+    // and its own session cookie (ultrademy_affiliate_session). An affiliate is always
+    // an existing UltrAdemy account — this is not a separate identity system, just a
+    // separate session boundary, exactly as careers already demonstrates.
+    'affiliate' => [
+        'url' => env('AFFILIATE_URL') ?: (rtrim((string) (env('APP_URL') ?: ultrademy_detect_base_url($root)), '/') . '/affiliate'),
+    ],
     'db' => [
         'host'    => env('DB_HOST', '127.0.0.1'),
         'port'    => (int) env('DB_PORT', 3306),
@@ -130,6 +137,12 @@ function app_url(string $path = ''): string
 function careers_url(string $path = ''): string
 {
     return rtrim((string) config('careers.url'), '/') . '/' . ltrim($path, '/');
+}
+
+/** Same as app_url(), but into the affiliate portal — see the `affiliate.url` config entry above. */
+function affiliate_url(string $path = ''): string
+{
+    return rtrim((string) config('affiliate.url'), '/') . '/' . ltrim($path, '/');
 }
 
 // --- error reporting -----------------------------------------------------

@@ -51,7 +51,7 @@
 
     <div class="card">
       <div class="chead"><h3>Apply</h3></div>
-      <form method="post" action="app.php?r=affiliate.apply">
+      <form method="post" action="app.php?r=apply">
         <?= Csrf::field() ?>
         <div class="field">
           <label>How will you refer people?</label>

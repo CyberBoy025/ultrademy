@@ -27,7 +27,7 @@ final class AffiliateController
                 'enabled'   => Affiliate::enabled(),
                 'rate'      => Affiliate::defaultRateBps(),
             ]);
-            View::shell('affiliate', 'Affiliate Programme', $main);
+            View::affiliateShell('Affiliate Programme', $main);
             return;
         }
 
@@ -41,7 +41,7 @@ final class AffiliateController
             'minPayout'   => Affiliate::minPayout(),
             'payable'     => Affiliate::payableBalance((int) $affiliate['id']),
         ]);
-        View::shell('affiliate', 'Affiliate Programme', $main);
+        View::affiliateShell('Affiliate Programme', $main);
     }
 
     public static function apply(): void
@@ -55,7 +55,9 @@ final class AffiliateController
         );
         Session::flash($result['ok'] ? 'success' : 'error',
             $result['ok'] ? 'Application submitted. We will let you know once it has been reviewed.' : (string) $result['error']);
-        header('Location: app.php?r=affiliate');
+        // Relative — this is only ever reached via the affiliate portal's own front
+        // controller (public/affiliate/app.php) now, never the main app.
+        header('Location: app.php');
         exit;
     }
 

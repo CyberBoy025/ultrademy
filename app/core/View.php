@@ -42,4 +42,16 @@ final class View
     {
         require dirname(__DIR__) . '/views/layout/careers.php';
     }
+
+    /**
+     * Affiliate portal page. Unlike careers, this wears the LMS shell's own chrome
+     * (shell.css) rather than the public site's — an affiliate is never a stranger, and
+     * affiliate/mine.php + affiliate/apply.php already use shell.css component classes
+     * (.card, .chead, .topbar). What's separate is the session and the URL, not the
+     * visual language, so there was no reason to rewrite either view.
+     */
+    public static function affiliateShell(string $title, string $main): void
+    {
+        require dirname(__DIR__) . '/views/layout/affiliate.php';
+    }
 }
