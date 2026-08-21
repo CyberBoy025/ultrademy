@@ -182,7 +182,7 @@ automatically.
 > **Release blocker raised in Phase 7.** Apache serves this project from `htdocs/ultra`,
 > so `public/` was never really the web root — `.env`, all source, and uploaded ID
 > documents were fetchable over HTTP. `.htaccess` denials now block them, but production
-> must use a vhost whose DocumentRoot is `.../ultra/public`. See
+> must use a vhost whose DocumentRoot is `.../ultrademymain/public`. See
 > [12-applications-students.md](12-applications-students.md) §6 and §8.
 
 Phase 8 (LMS — [13](13-lms.md)) builds the content chain from README §18: courses,

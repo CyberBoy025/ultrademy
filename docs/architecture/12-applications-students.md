@@ -151,7 +151,7 @@ details.
 ## 8. Open questions
 
 1. **Deployment must not rely on `.htaccess`.** The correct fix is a vhost whose
-   DocumentRoot is `.../ultra/public`, so nothing outside it is reachable even if
+   DocumentRoot is `.../ultrademymain/public`, so nothing outside it is reachable even if
    `AllowOverride` is off. The `.htaccess` files protect the default XAMPP layout
    developers actually run; production needs the vhost. **This should be treated as a
    release blocker.**

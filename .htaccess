@@ -23,6 +23,19 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
+    # Work out the URL path this .htaccess lives at (e.g. "/ultrademymain/") without
+    # hard-coding it, so the folder can be renamed without editing this file.
+    RewriteCond %{REQUEST_URI}::$1 ^(.*?/)(.*)::\2$
+    RewriteRule ^(.*)$ - [E=BASE:%1]
+
+    # Anyone arriving on an old /public/... link is sent to the short URL, so the app
+    # has one address rather than two that both work. Matching on THE_REQUEST — the
+    # untouched original request line — is what keeps the internal rewrite below from
+    # being redirected straight back out into a loop: it only ever sees what the
+    # browser actually asked for, never the rewritten path.
+    RewriteCond %{THE_REQUEST} \s[^?]*/public/ [NC]
+    RewriteRule ^public/(.*)$ %{ENV:BASE}$1 [R=302,L]
+
     # Already inside public/ — leave it alone. Without this the per-directory rewrite
     # re-enters and builds public/public/public/... until Apache gives up.
     RewriteRule ^public/ - [L]

@@ -115,7 +115,7 @@ function config(string $path, mixed $default = null): mixed
 }
 
 /**
- * Absolute URL into the MAIN app, built from app.url — never hard-code "/ultra/public/..."
+ * Absolute URL into the MAIN app, built from app.url — never hard-code "/ultrademymain/..."
  * (docs/architecture/16-careers-portal.md §14: that prefix disappears the moment this runs
  * behind a real vhost). Only for cross-app links; same-app pages should stay relative,
  * exactly like shell.php's own "css/shell.css" already does.

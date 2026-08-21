@@ -1581,7 +1581,7 @@ storage/
   app/submissions/ assignment submissions
   app/proofs/      proof-of-payment uploads
 database/
-  migrations/    schema changes, in order (80 files as of Phase 11)
+  migrations/    schema changes, in order (104 files as of Phase 13)
   migrate.php    runner — applies new migrations, tracked in a `migrations` table
   seed.php       dev/demo data — roles, permissions, centres, users, programmes,
                  packages and the feature matrix. Idempotent; safe to re-run.

@@ -182,12 +182,15 @@ duplicate anything.
 | Register | http://localhost/ultrademymain/register.php |
 | Platform (after login) | http://localhost/ultrademymain/app.php |
 | Careers portal | http://localhost/ultrademymain/careers/ |
-| Health check | http://localhost/ultrademymain/health.php |
 | phpMyAdmin | http://localhost/phpmyadmin |
 
-**Start with the health check.** It tests PHP version, every required extension, the
-database connection and folder permissions, and tells you exactly what is wrong if
-something is.
+**Start with the public website.** If it renders, PHP, the `.htaccess` rewrite and the
+database connection are all working — the homepage reads programmes and centres out of
+the database to build itself, so a blank or broken page means one of those three, in
+that order.
+
+Then run `php tests/run.php`, which exercises the money, gateway-signature, marking and
+campaign logic without needing a browser.
 
 ---
 
@@ -299,8 +302,8 @@ too if you want a genuinely clean state.
 
 Not optional:
 
-1. Delete `public/health.php` and `public/_status.php` — both leak server and schema
-   detail.
+1. Delete any diagnostic endpoint added during development — anything that reports
+   PHP, schema or server detail belongs on a laptop, not the internet.
 2. Delete every seeded demo account, or change the passwords.
 3. Set `APP_DEBUG=false`.
 4. Give MySQL's root user a password, or better, create a dedicated database user with

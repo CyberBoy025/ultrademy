@@ -167,7 +167,7 @@ So: prove the payment path first.
 
 1. `ngrok http 80`
 2. Point Paystack's test webhook at
-   `https://<id>.ngrok.io/ultra/public/webhook.php?provider=paystack`
+   `https://<id>.ngrok.io/ultrademymain/webhook.php?provider=paystack`
 3. Pay a test invoice; confirm a row appears in `webhook_events` with
    `signature_valid = 1` and `processed_at` set
 4. Replay the same event; confirm it returns "Duplicate event ignored" and does not
