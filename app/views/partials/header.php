@@ -27,8 +27,8 @@ if (class_exists('Corporate') && Corporate::enabled()) {
 <header class="site-header">
   <div class="wrap">
     <a class="brand" href="index.php" aria-label="UltrAdemy — home">
-      <img class="brand-logo on-light" src="img/black-logo.png" alt="" width="165" height="32">
-      <img class="brand-logo on-dark" src="img/white-logo.png" alt="" width="165" height="32" style="display:none">
+      <img class="brand-logo on-light" src="img/black-logo.png" alt="" width="171" height="32">
+      <img class="brand-logo on-dark" src="img/white-logo.png" alt="" width="171" height="32" style="display:none">
     </a>
 
     <nav class="nav-main" id="primaryNav" aria-label="Primary">

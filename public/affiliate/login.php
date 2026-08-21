@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <div class="auth-wrap">
   <div class="auth-side">
-    <a class="brand" href="<?= View::e(app_url('index.php')) ?>" aria-label="UltrAdemy — home"><img class="brand-logo" src="../img/white-logo.png" alt="" width="165" height="32"></a>
+    <a class="brand" href="<?= View::e(app_url('index.php')) ?>" aria-label="UltrAdemy — home"><img class="brand-logo" src="../img/white-logo.png" alt="" width="171" height="32"></a>
     <div class="quote">
       <h2>Earn by referring people to UltrAdemy.</h2>
       <p>Your affiliate dashboard, referral link, and commission history — sign in with the same account you use everywhere else on UltrAdemy.</p>

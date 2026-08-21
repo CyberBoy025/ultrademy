@@ -85,7 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !Csrf::verify()) {
 
 <div class="auth-wrap">
   <div class="auth-side">
-    <a class="brand" href="index.php" aria-label="UltrAdemy — home"><img class="brand-logo" src="img/white-logo.png" alt="" width="165" height="32"></a>
+    <a class="brand" href="index.php" aria-label="UltrAdemy — home"><img class="brand-logo" src="img/white-logo.png" alt="" width="171" height="32"></a>
     <div class="quote">
       <h2>Create your UltrAdemy account.</h2>
       <p>One universal account gives you access to programme applications, online learning, payments and — if you choose — the affiliate programme.</p>

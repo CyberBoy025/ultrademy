@@ -60,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   </button>
   <div class="auth-brand-pane">
     <a class="brand" href="app.php" aria-label="UltrAdemy Careers — home">
-      <img class="brand-logo" src="../img/white-logo.png" alt="" width="165" height="32">
+      <img class="brand-logo" src="../img/white-logo.png" alt="" width="171" height="32">
       <span class="badge">Careers</span>
     </a>
     <div class="auth-quote">
