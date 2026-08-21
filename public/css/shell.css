@@ -359,6 +359,19 @@ table.dt{width:100%;border-collapse:collapse;font-size:12.5px;min-width:560px}
   background:var(--surface);color:var(--text);font-size:13px}
 .field input:focus,.field select:focus{border-color:var(--cyan-500)}
 .field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* password visibility toggle — shell.js wraps every input[type=password] in .pw-wrap
+   and injects the button; this is purely presentational. */
+.pw-wrap{display:block;position:relative}
+.pw-wrap input{width:100%;padding-right:40px}
+.pw-toggle{position:absolute;top:50%;right:4px;transform:translateY(-50%);
+  width:28px;height:28px;border:none;background:none;border-radius:var(--r-sm);
+  display:grid;place-items:center;color:var(--text-3);cursor:pointer}
+.pw-toggle:hover{color:var(--text-2)}
+.pw-toggle svg{width:16px;height:16px;stroke-width:1.8}
+.pw-toggle .i-eye-off{display:none}
+.pw-wrap.pw-visible .i-eye{display:none}
+.pw-wrap.pw-visible .i-eye-off{display:block}
 .form-foot{display:flex;align-items:center;justify-content:space-between;font-size:12px;margin:4px 0 20px}
 .form-foot a{color:var(--brand-cyan-text);font-weight:600}
 .divider-or{display:flex;align-items:center;gap:10px;margin:20px 0;font-size:11px;color:var(--text-3)}
