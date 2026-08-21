@@ -70,7 +70,11 @@ main p a:not(.btn):hover,.prose a:hover{text-decoration:underline}
   background:var(--cyan-500);color:#04121a;font-family:var(--font-primary);
   font-size:10.5px;font-weight:700;line-height:18px;text-align:center;vertical-align:1px;
 }
-.nav-user{font-size:13px;color:var(--color-text-secondary);white-space:nowrap}
+/* The signed-in name is the one part of this row whose width is unbounded, so cap
+   it. Combined with the first-name-only markup in layout/careers.php, no account
+   can push the header past its container however long the person's name is. */
+.nav-user{font-size:13px;color:var(--color-text-secondary);white-space:nowrap;
+  max-width:120px;overflow:hidden;text-overflow:ellipsis}
 @media (max-width:960px){.nav-user{display:none}}
 
 /* The careers header carries more than the marketing one — a "Careers" badge on the
@@ -93,18 +97,24 @@ main p a:not(.btn):hover,.prose a:hover{text-decoration:underline}
    where the marketing site has five. The site header is a non-wrapping 76px flex
    row inside a 1200px container (site.css:111-119), so at the marketing site's
    32px gap and 14px links that row overruns its 1152px of usable width even on a
-   wide desktop. Tightening the gap and type buys ~50px, which fits; below 1150px
-   careers collapses to the burger earlier than the marketing site's 960px. The
-   collapse rules are copied from site.css:135-143 rather than shared, because
-   site.css belongs to the marketing site and is not edited from here. */
+   wide desktop — and a wider monitor buys nothing, because .wrap caps at 1200px
+   whatever the viewport. Since .nav-main does not wrap, that overflow surfaced as
+   labels breaking mid-word ("Open / Positions") and a double-height header rather
+   than as a scrollbar; white-space:nowrap makes that particular failure
+   impossible. Tightening the gap and type, and capping the signed-in name, keeps
+   the row inside 1152px with room to spare. Below 1200px the container is
+   viewport-bound and no longer fits, so careers collapses to the burger there
+   rather than at the marketing site's 960px. The collapse rules are copied from
+   site.css:135-143 rather than shared, because site.css belongs to the marketing
+   site and is not edited from here. */
 .nav-main{gap:14px}
-.nav-main a{font-size:13.5px}
+.nav-main a{font-size:13.5px;white-space:nowrap}
 /* The brand lockup is a 165px logo here, not a 34px tile plus a word, and it is
    followed by the "Careers" badge — so trim the badge and its gap to buy back the
    width the wider mark costs the nav row. */
 .site-header .brand{gap:8px}
 .site-header .brand .badge{font-size:10.5px;padding:3px 8px}
-@media (max-width:1150px){
+@media (max-width:1200px){
   .nav-main{
     position:fixed;inset:76px 0 0 0;background:var(--color-background);flex-direction:column;
     align-items:flex-start;padding:24px;gap:4px;transform:translateY(-8px);opacity:0;pointer-events:none;
