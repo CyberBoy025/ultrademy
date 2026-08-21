@@ -1,3 +1,10 @@
+<?php
+/**
+ * Computed independently rather than reusing header.php's $headerUser — this partial
+ * should not depend on being included after header.php in the same request.
+ */
+$footerUser = Auth::check() ? Auth::user() : null;
+?>
 <footer class="site-footer">
   <div class="wrap">
     <div class="footer-grid">
@@ -39,9 +46,14 @@
       <div class="footer-col">
         <h5>Account</h5>
         <ul>
-          <li><a href="login.php">Login</a></li>
-          <li><a href="register.php">Register</a></li>
-          <li><a href="register.php">Student Portal</a></li>
+          <?php if ($footerUser): ?>
+            <li><a href="app.php">Dashboard</a></li>
+            <li><a href="logout.php">Log Out</a></li>
+          <?php else: ?>
+            <li><a href="login.php">Login</a></li>
+            <li><a href="register.php">Register</a></li>
+            <li><a href="register.php">Student Portal</a></li>
+          <?php endif; ?>
         </ul>
       </div>
 

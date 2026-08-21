@@ -1,5 +1,6 @@
 <?php
 require __DIR__ . '/../config/bootstrap.php';
+Session::start();
 $programmes = require __DIR__ . '/../app/views/partials/demo-programmes.php';
 $featured = array_slice($programmes, 0, 3);
 $active = 'home';

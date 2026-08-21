@@ -1,5 +1,6 @@
 <?php
 require __DIR__ . '/../config/bootstrap.php';
+Session::start();
 $active = 'contact';
 
 // Form has no backend yet (README §69 — submissions will enter the admin
