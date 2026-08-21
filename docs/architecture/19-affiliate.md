@@ -171,19 +171,21 @@ costs real money.
 | Affiliate marketing assets (banners, copy) | CMS territory |
 | Public affiliate landing page (§64) | The in-app page exists; the public pitch does not |
 | Self-service payout requests | Finance raises payouts today |
-| Clawback on refund | **The real gap** — see below |
 
-**Clawback is the notable omission.** If a referred person is refunded, their commission
-stays `approved` or `paid`. There is no automatic reversal. The manual route is voiding
-the commission before payout; after payout there is no mechanism at all.
-
-This needs a decision before the programme handles real volume: reverse automatically on
-refund, deduct from the next payout, or absorb it.
+**Clawback on refund — resolved 21 Aug 2026.** `Affiliate::clawback()`, called from
+`Refund::decide()` the moment a refund is approved, voids the commission earned on that
+payment. A `pending` or `approved` commission (not yet paid out) is voided outright —
+no money has left the business. An already-`paid` commission is voided too, so it stops
+counting toward the affiliate's totals, but recovering money already sent to the
+affiliate stays a deliberate, manual finance decision — automatically debiting a future
+payout would need a running-balance mechanism (and the possibility of a negative payout)
+that was out of scope for this pass. Tested against a real database in
+`tests/ClawbackTest.php`.
 
 | # | Decision | Default taken |
 |---|---|---|
 | 6 | Commission on first payment, or all payments? | First only |
 | 32 | Default commission rate | 5% |
 | 33 | Payout minimum | ₦5,000 |
-| 34 | Clawback on refund | **None — needs deciding** |
+| 34 | Clawback on refund | **Resolved 21 Aug 2026 — reverse automatically; see above** |
 | 35 | Cookie window | 30 days |

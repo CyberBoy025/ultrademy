@@ -8,9 +8,9 @@ declare(strict_types=1);
  *
  * Tests that need a database live behind a DB_TEST_DSN environment variable and skip
  * themselves when it is absent, so the suite is always runnable on a fresh checkout.
- * See PermissionScopeTest.php for the one test file that currently uses it — it builds
- * its own throwaway schema from the real migration files, so it never touches whatever
- * database APP_URL's .env points at.
+ * See PermissionScopeTest.php and ClawbackTest.php for the test files that use it —
+ * each builds its own throwaway schema from the real migration files, so neither ever
+ * touches whatever database APP_URL's .env points at.
  */
 
 $passed = 0;

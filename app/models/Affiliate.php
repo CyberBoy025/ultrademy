@@ -388,6 +388,42 @@ final class Affiliate
         return '';
     }
 
+    /**
+     * Reverses the commission earned on a payment that has just been refunded —
+     * Decision 34 (19-affiliate.md §10, confirmed 21 Aug 2026: reverse automatically,
+     * previously "the real gap"). Called from Refund::decide() the moment a refund is
+     * approved, in the same request as the payment being marked reversed.
+     *
+     * A commission still `pending` or `approved` (not yet swept into a payout) is voided
+     * outright — no money has left the business, so there is nothing to recover.
+     *
+     * A commission already `paid` is the harder case: the affiliate already has the
+     * money. Automatically debiting a future payout is a materially bigger feature — a
+     * running balance, the possibility of a negative payout — than "reverse
+     * automatically" was scoped to cover here. This voids the commission (it stops
+     * counting toward the affiliate's totals) and records that it was already paid, so
+     * recovery is a deliberate manual finance decision, not a silently adjusted number.
+     */
+    public static function clawback(int $paymentId, string $reason): void
+    {
+        $commission = Database::one(
+            "SELECT * FROM commissions WHERE payment_id = :p AND status <> 'void'",
+            ['p' => $paymentId]
+        );
+        if (!$commission) {
+            return; // no commission was ever earned on this payment
+        }
+
+        $wasPaid = $commission['status'] === 'paid';
+        Database::query(
+            "UPDATE commissions SET status = 'void', void_reason = :r WHERE id = :id",
+            ['r' => mb_substr($reason, 0, 255), 'id' => $commission['id']]
+        );
+        Audit::log('commission.clawed_back', 'commissions', (int) $commission['id'],
+            ['status' => $commission['status']],
+            ['status' => 'void', 'reason' => $reason, 'was_already_paid' => $wasPaid]);
+    }
+
     /** Approved but not yet attached to a payout. */
     public static function payableBalance(int $affiliateId): int
     {

@@ -15,8 +15,12 @@ declare(strict_types=1);
  */
 
 // A stub for the settings store, declared BEFORE the gateways are loaded so their calls
-// to Setting::get() resolve here rather than reaching for a database.
-if (!class_exists('Setting')) {
+// to Setting::get() resolve here rather than reaching for a database. The `false` here
+// matters: class_exists()'s default $autoload=true would itself trigger the real
+// Setting.php the moment any earlier-run test file has registered the autoloader
+// (bootstrap.php's spl_autoload_register), making this check true for the wrong reason
+// and silently skipping the stub.
+if (!class_exists('Setting', false)) {
     final class Setting
     {
         /** @var array<string,string> */

@@ -83,6 +83,10 @@ final class Refund
             // edited, and the refund row is the correcting entry.
             Database::query("UPDATE payments SET status = 'reversed' WHERE id = :p", ['p' => $refund['payment_id']]);
             Invoice::refreshStatus((int) Database::one('SELECT invoice_id FROM payments WHERE id = :p', ['p' => $refund['payment_id']])['invoice_id']);
+
+            // Decision 34 (19-affiliate.md §10): a refunded payment claws back any
+            // commission it earned. No-op if the payment never earned one.
+            Affiliate::clawback((int) $refund['payment_id'], 'Payment refunded: ' . ($note !== '' ? $note : 'no reason given'));
         }
         return '';
     }
