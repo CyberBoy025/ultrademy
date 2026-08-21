@@ -153,11 +153,17 @@ button,input,textarea,select{font-family:inherit;font-size:inherit;color:inherit
 .nav-toggle svg{width:18px;height:18px;margin:0 auto}
 
 @media (max-width:960px){
-  .nav-main{position:fixed;inset:76px 0 0 0;background:var(--color-background);flex-direction:column;
+  .nav-main{position:fixed;inset:76px 0 0 0;z-index:45;background:var(--color-background);flex-direction:column;
     align-items:flex-start;padding:24px;gap:4px;transform:translateY(-8px);opacity:0;pointer-events:none;
     transition:opacity .15s ease,transform .15s ease;overflow-y:auto}
   .nav-main a{width:100%;padding:12px 4px;border-bottom:1px solid var(--color-border)}
   body.nav-open .nav-main{transform:translateY(0);opacity:1;pointer-events:auto}
+  /* .site-header's backdrop-filter makes it the containing block for any position:fixed
+     descendant (same rule as transform/filter) — .nav-main was rendering confined to the
+     header's own ~76px box and stacking context instead of the viewport, regardless of
+     its own z-index. Dropping the filter only while the menu is open frees .nav-main to
+     position and stack against the viewport like a fixed element normally would. */
+  body.nav-open .site-header{backdrop-filter:none}
   .nav-toggle{display:block}
   .header-actions .btn-secondary{display:none}
 }
