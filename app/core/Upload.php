@@ -21,6 +21,14 @@ final class Upload
         'png'  => ['image/png'],
     ];
 
+    /** A profile photo — image only, no PDF. */
+    public const IMAGE_TYPES = [
+        'jpg'  => ['image/jpeg'],
+        'jpeg' => ['image/jpeg'],
+        'png'  => ['image/png'],
+        'webp' => ['image/webp'],
+    ];
+
     /** Course materials additionally allow common office/media formats. */
     public const MATERIAL_TYPES = [
         'pdf'  => ['application/pdf'],

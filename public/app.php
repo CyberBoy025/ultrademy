@@ -47,6 +47,13 @@ match ($route) {
     'subscription.request' => SubscriptionController::request(),
     'subscription.cancel'  => SubscriptionController::cancelMine(),
 
+    // Every signed-in user's own account settings — name, phone, photo. No permission
+    // check beyond being logged in; identity.profile.update is ○ (own records only)
+    // for every role (03-rbac.md §5).
+    'profile'        => ProfileController::edit(),
+    'profile.update' => ProfileController::update(),
+    'profile.photo'  => ProfileController::photo(),
+
     'subscriptions'          => SubscriptionController::index(),
     'subscriptions.activate' => SubscriptionController::activate(),
     'subscriptions.void'     => SubscriptionController::voidSub(),

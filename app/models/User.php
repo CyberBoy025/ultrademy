@@ -77,4 +77,36 @@ final class User
     {
         Database::query('UPDATE users SET status = :s WHERE id = :id', ['s' => $status, 'id' => $id]);
     }
+
+    /**
+     * A user editing their own name and phone — identity.profile.update is ○ (own
+     * records only) for every role in 03-rbac.md §5, so this needs no permission check,
+     * only Auth::requireLogin() at the front controller. Returns an error string, or ''
+     * on success.
+     */
+    public static function updateOwnProfile(int $userId, string $first, string $last, ?string $phone): string
+    {
+        if ($first === '' || $last === '') {
+            return 'First and last name are required.';
+        }
+        try {
+            Database::query(
+                'UPDATE user_profiles SET first_name = :f, last_name = :l WHERE user_id = :u',
+                ['f' => $first, 'l' => $last, 'u' => $userId]
+            );
+            Database::query('UPDATE users SET phone = :p WHERE id = :u', ['p' => $phone, 'u' => $userId]);
+        } catch (PDOException $e) {
+            // uq_users_phone — the same number is already on another account.
+            if ((int) ($e->errorInfo[1] ?? 0) === 1062) {
+                return 'That phone number is already in use on another account.';
+            }
+            throw $e;
+        }
+        return '';
+    }
+
+    public static function updatePhoto(int $userId, ?string $storedName): void
+    {
+        Database::query('UPDATE user_profiles SET photo_path = :p WHERE user_id = :u', ['p' => $storedName, 'u' => $userId]);
+    }
 }

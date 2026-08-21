@@ -26,13 +26,13 @@ $errorMsg   = Session::flash('error');
 
 <div class="shell<?= $noRail ? ' no-rail' : '' ?>">
   <aside class="side">
-    <button class="prof">
+    <a class="prof" href="app.php?r=profile">
       <span class="pfp" aria-hidden="true"><?= View::e(Auth::initials()) ?></span>
       <span class="prof-t">
         <span class="prof-n"><?= View::e(Auth::name()) ?></span>
         <span class="cap" style="display:block"><?= View::e(implode(' · ', Auth::roles())) ?></span>
       </span>
-    </button>
+    </a>
 
     <nav class="nav" aria-label="Main">
       <?php foreach ($navItems as $item): ?>

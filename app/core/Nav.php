@@ -287,6 +287,13 @@ final class Nav
             'icon' => '<rect x="2" y="4" width="20" height="14" rx="2"/><path d="M2 8h20"/>',
         ];
 
+        // Every signed-in user can edit their own name, phone and photo — no permission
+        // gate, same reasoning as My Subscription above.
+        $items[] = [
+            'key' => 'profile', 'label' => 'My Profile', 'href' => 'app.php?r=profile',
+            'icon' => '<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/>',
+        ];
+
         if (Auth::can('subscriptions.package.manage')) {
             $items[] = [
                 'key' => 'packages', 'label' => 'Packages', 'href' => 'app.php?r=packages',
