@@ -40,6 +40,20 @@ final class Auth
         self::$roleRows = null;
     }
 
+    /**
+     * Drops the cached user/role rows without touching the session.
+     *
+     * A real request is always one identity for its whole lifetime, so nothing has ever
+     * needed this. A test process that impersonates several fixture users in turn does —
+     * without it, the second user would silently see the first user's cached roles. Not
+     * for use outside tests.
+     */
+    public static function forgetCachedIdentity(): void
+    {
+        self::$user = false;
+        self::$roleRows = null;
+    }
+
     public static function id(): ?int
     {
         return $_SESSION['user_id'] ?? null;

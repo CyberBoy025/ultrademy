@@ -192,6 +192,20 @@ that order.
 Then run `php tests/run.php`, which exercises the money, gateway-signature, marking and
 campaign logic without needing a browser.
 
+That covers pure logic. The two permission/centre-scope checks §42 cares about most —
+a Gwagwalada manager must never see Kubwa's data, a cashier must never verify a bank
+transfer — need a real database, so they skip by default. To run them too:
+
+```
+set DB_TEST_DSN=mysql:host=127.0.0.1;port=3306;dbname=ultrademy_test;charset=utf8mb4
+php tests/run.php
+```
+
+This builds `ultrademy_test` itself from the real migration files and reseeds it on
+every run — it never touches the database `APP_URL`/`.env` point at, so it's safe to
+run against a machine that also has real data in `ultrademy`. `DB_TEST_USER` /
+`DB_TEST_PASS` default to `root` / '' if unset.
+
 ---
 
 ## Step 10 — Log in
