@@ -54,10 +54,10 @@ $user       = Auth::check() ? Auth::user() : null;
 <body>
 
 <header style="display:flex;align-items:center;justify-content:space-between;gap:16px;
-  max-width:1080px;margin:0 auto;padding:20px 24px;flex-wrap:wrap">
+  max-width:1320px;margin:0 auto;padding:20px 24px;flex-wrap:wrap">
   <a href="app.php" style="display:flex;align-items:center;gap:10px" aria-label="UltrAdemy Affiliates — home">
-    <img src="../img/black-logo.png" alt="" width="165" height="32" class="on-light">
-    <img src="../img/white-logo.png" alt="" width="165" height="32" class="on-dark">
+    <img src="../img/black-logo.png" alt="" width="171" height="32" class="on-light">
+    <img src="../img/white-logo.png" alt="" width="171" height="32" class="on-dark">
     <span class="cap" style="font-weight:700;letter-spacing:.02em">Affiliates</span>
   </a>
 
@@ -83,7 +83,7 @@ $user       = Auth::check() ? Auth::user() : null;
   </div>
 </header>
 
-<div style="max-width:1080px;margin:0 auto;padding:0 24px 60px">
+<div style="max-width:1320px;margin:0 auto;padding:0 24px 60px">
 
   <?php if ($successMsg || $errorMsg): ?>
     <?php if ($successMsg): ?><div class="card" style="border-left:3px solid var(--success);margin-bottom:16px"><?= View::e($successMsg) ?></div><?php endif; ?>
@@ -94,12 +94,12 @@ $user       = Auth::check() ? Auth::user() : null;
 </div>
 
 <footer style="border-top:1px solid var(--border);margin-top:40px">
-  <div class="aff-footer-grid" style="max-width:1080px;margin:0 auto;padding:36px 24px 20px">
+  <div class="aff-footer-grid" style="max-width:1320px;margin:0 auto;padding:36px 24px 20px">
 
     <div>
       <a href="<?= View::e(app_url('index.php')) ?>" style="display:flex;align-items:center;gap:10px" aria-label="UltrAdemy — home">
-        <img src="../img/black-logo.png" alt="" width="165" height="32" class="on-light">
-        <img src="../img/white-logo.png" alt="" width="165" height="32" class="on-dark">
+        <img src="../img/black-logo.png" alt="" width="171" height="32" class="on-light">
+        <img src="../img/white-logo.png" alt="" width="171" height="32" class="on-dark">
       </a>
       <p class="cap" style="margin-top:12px;max-width:34ch">Practical training, digital learning and career-focused programmes — at our physical hubs and online.</p>
     </div>
@@ -144,7 +144,7 @@ $user       = Auth::check() ? Auth::user() : null;
     </div>
   </div>
 
-  <div style="max-width:1080px;margin:0 auto;padding:16px 24px;border-top:1px solid var(--border);
+  <div style="max-width:1320px;margin:0 auto;padding:16px 24px;border-top:1px solid var(--border);
     display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px">
     <span class="cap">&copy; <?= date('Y') ?> UltrAdemy. All rights reserved.</span>
     <div style="display:flex;gap:16px">

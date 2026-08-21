@@ -10,7 +10,7 @@
 <div class="card" style="margin-bottom:20px">
   <div class="chead"><h3>Your referral link</h3></div>
   <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-    <input type="text" id="reflink" value="<?= View::e($link) ?>" readonly style="flex:1;min-width:260px">
+    <input type="text" id="reflink" value="<?= View::e($link) ?>" readonly style="flex:1;min-width:0;width:100%">
     <button type="button" class="btn sm primary" id="copybtn">Copy</button>
   </div>
   <p class="cap" style="margin-top:10px">
