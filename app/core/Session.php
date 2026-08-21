@@ -21,6 +21,17 @@ final class Session
             'samesite' => 'Lax',
         ]);
         session_name($name);
+
+        // A stale or foreign cookie under this name (leftover from a previous config,
+        // a different app on localhost, etc.) can carry an id session_start() rejects
+        // outright — PHP then only warns and continues without ever opening a session,
+        // so every read/write of $_SESSION silently no-ops for the rest of the request.
+        // Discard it up front so a fresh, valid id gets minted instead.
+        if (isset($_COOKIE[$name]) && !preg_match('/^[a-zA-Z0-9,-]{22,250}$/', $_COOKIE[$name])) {
+            unset($_COOKIE[$name]);
+            setcookie($name, '', time() - 42000, '/');
+        }
+
         session_start();
     }
 

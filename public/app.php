@@ -225,6 +225,15 @@ match ($route) {
     'settings.update' => PlatformController::settingsUpdate(),
     'audit'           => PlatformController::audit(),
 
+    'utilities'                 => UtilitiesController::index(),
+    'utilities.clearcache'      => UtilitiesController::clearCache(),
+    'utilities.clearlog'        => UtilitiesController::clearLog(),
+    'utilities.toggledebug'     => UtilitiesController::toggleDebug(),
+    'utilities.togglehttps'     => UtilitiesController::toggleHttps(),
+    'utilities.migrate'         => UtilitiesController::migrate(),
+    'utilities.importdemo'      => UtilitiesController::importDemo(),
+    'utilities.resetdb'         => UtilitiesController::resetDb(),
+
     'recruitment'                    => RecruitmentAdminController::index(),
     'recruitment.jobs'               => RecruitmentAdminController::jobs(),
     'recruitment.jobs.create'        => RecruitmentAdminController::jobCreate(),

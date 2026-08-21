@@ -55,8 +55,8 @@ $unread = $user ? Notify::unreadCount((int) $user['id'], 'recruitment') : 0;
 <header class="site-header">
   <div class="wrap">
     <a class="brand" href="app.php" aria-label="UltrAdemy Careers — home">
-      <img class="brand-logo on-light" src="../img/black-logo.png" alt="" width="165" height="32">
-      <img class="brand-logo on-dark" src="../img/white-logo.png" alt="" width="165" height="32" style="display:none">
+      <img class="brand-logo on-light" src="../img/black-logo.png" alt="" width="78" height="32">
+      <img class="brand-logo on-dark" src="../img/white-logo.png" alt="" width="78" height="32" style="display:none">
       <span class="badge">Careers</span>
     </a>
 
@@ -110,8 +110,8 @@ $unread = $user ? Notify::unreadCount((int) $user['id'], 'recruitment') : 0;
     <div class="footer-grid">
       <div class="footer-brand">
         <a class="brand" href="app.php" aria-label="UltrAdemy Careers — home">
-          <img class="brand-logo on-light" src="../img/black-logo.png" alt="" width="165" height="32">
-          <img class="brand-logo on-dark" src="../img/white-logo.png" alt="" width="165" height="32" style="display:none">
+          <img class="brand-logo on-light" src="../img/black-logo.png" alt="" width="78" height="32">
+          <img class="brand-logo on-dark" src="../img/white-logo.png" alt="" width="78" height="32" style="display:none">
           <span class="badge">Careers</span>
         </a>
         <p>Roles across technology, education, administration and centre operations — at Gwagwalada Hub, Kubwa Hub, or remote.</p>

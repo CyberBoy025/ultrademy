@@ -301,6 +301,13 @@ final class Nav
             ];
         }
 
+        if (Auth::can('platform.utilities.manage')) {
+            $items[] = [
+                'key' => 'utilities', 'label' => 'Utilities', 'href' => 'app.php?r=utilities',
+                'icon' => '<path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.4-3.4a4 4 0 01-5.4 5.4L6.5 20.5a2 2 0 01-2.8-2.8L12.9 8.5a4 4 0 015.4-5.4l-3.4 3.4z"/>',
+            ];
+        }
+
         if (Auth::can('platform.setting.update')) {
             $items[] = [
                 'key' => 'settings', 'label' => 'Settings', 'href' => 'app.php?r=settings',

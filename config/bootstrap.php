@@ -81,6 +81,7 @@ $GLOBALS['ultrademy_config'] = [
         'name'  => env('APP_NAME', 'Ultrademy'),
         'env'   => env('APP_ENV', 'local'),
         'debug' => filter_var(env('APP_DEBUG', 'false'), FILTER_VALIDATE_BOOL),
+        'force_https' => filter_var(env('FORCE_HTTPS', 'false'), FILTER_VALIDATE_BOOL),
         'url'   => env('APP_URL') ?: ultrademy_detect_base_url($root),
         'root'  => $root,
     ],
@@ -141,6 +142,20 @@ if (config('app.debug')) {
 }
 
 date_default_timezone_set('Africa/Lagos');
+
+// --- force HTTPS -----------------------------------------------------------
+// Toggled from the Utilities page (Disable/Enable Force HTTPS); nothing to enforce for
+// CLI scripts (migrations, cron, seeding), which have no request to redirect.
+if (config('app.force_https') && PHP_SAPI !== 'cli' && !empty($_SERVER['HTTP_HOST'])) {
+    $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+        || (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https');
+    if (!$isHttps) {
+        $host = preg_replace('/[^A-Za-z0-9.\-:\[\]]/', '', (string) $_SERVER['HTTP_HOST']);
+        $uri = $_SERVER['REQUEST_URI'] ?? '/';
+        header('Location: https://' . $host . $uri, true, 301);
+        exit;
+    }
+}
 
 // --- autoloader ------------------------------------------------------------
 // No namespaces yet — classes are looked up by convention across the three
