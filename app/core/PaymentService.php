@@ -435,6 +435,12 @@ final class PaymentService
         self::issueReceipt($paymentId, $issuedBy);
         $status = Invoice::refreshStatus($invoiceId);
 
+        // Affiliate commission, if this payer was referred. Deliberately here rather than
+        // in fulfil(): commission is earned on money actually received, so a part payment
+        // counts, and it must fire for card, transfer and cash alike. The hook swallows
+        // its own errors — an affiliate problem must never break someone's enrolment.
+        Affiliate::onPaymentSuccessful($paymentId);
+
         if ($status === 'paid') {
             self::fulfil($invoiceId);
 
@@ -504,6 +510,11 @@ final class PaymentService
                 Audit::log('subscription.activated', 'subscriptions', $payableId,
                     ['status' => 'pending'], ['status' => 'active', 'source' => 'invoice_paid']);
             }
+        } elseif ($invoice['payable_type'] === 'donation') {
+            // A donation has no service to unlock — the fulfilment IS the acknowledgement.
+            // Routed through the same hook as everything else so a donation paid by card,
+            // by bank transfer or in cash all end up in exactly one place.
+            Donation::markCompleted($payableId);
         } elseif ($invoice['payable_type'] === 'enrolment') {
             $enr = Database::one('SELECT id, status, centre_id FROM enrolments WHERE id = :id', ['id' => $payableId]);
             if ($enr && $enr['status'] === 'pending_payment') {

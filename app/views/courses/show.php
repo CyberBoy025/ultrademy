@@ -137,6 +137,16 @@ $linkedIds = array_map('intval', array_column($programmes, 'id'));
 </div>
 <?php endif; ?>
 
+<?php if (Auth::can('education.assessment.manage')): ?>
+<h2 class="sec-title">Assessments</h2>
+<div class="card" style="margin-bottom:14px">
+  <p class="cap" style="margin-bottom:12px">
+    Quizzes and examinations for this course — questions, timing, attempt limits and marking.
+  </p>
+  <a class="btn primary btn-sm" href="app.php?r=assessments.manage&course=<?= (int) $course['id'] ?>">Manage assessments</a>
+</div>
+<?php endif; ?>
+
 <h2 class="sec-title">Assignments</h2>
 <div class="card" style="margin-bottom:14px">
   <div class="table-wrap">

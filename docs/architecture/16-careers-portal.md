@@ -24,7 +24,7 @@ leaked careers session must not become a foothold in the platform that holds stu
 records and payment data. `Session::start()` takes the cookie name for exactly this.
 
 `CAREERS_URL` is a single `.env` value (path-based today,
-`http://localhost/ultra/public/careers`). When careers gets its own subdomain, that one
+`http://localhost/ultrademymain/careers`). When careers gets its own subdomain, that one
 value changes — nothing in code hard-codes either form, because links go through
 `careers_url()`.
 
@@ -166,5 +166,5 @@ reality: no mail transport is configured, so nothing actually leaves the buildin
 ## 8. Demo state
 
 A fresh `migrate` + `seed` gives 4 departments, 4 job categories, 6 job postings and an
-email template, reachable at `/ultra/public/careers/` without logging in. The whole
+email template, reachable at `/ultrademymain/careers/` without logging in. The whole
 install is 80 migrations / 76 tables / 60 permissions / 16 roles.

@@ -1,10 +1,38 @@
-# Only `public/` is meant to be reachable by a browser. Under XAMPP the project sits
-# inside DocumentRoot (htdocs/ultra), so without this file Apache happily serves .env,
-# every source file, and everything under storage/ — including uploaded ID documents.
+# Only `public/` holds files a browser may fetch. Under XAMPP the whole project sits
+# inside DocumentRoot (htdocs/ultrademymain), so without this file Apache happily serves
+# .env, every source file, and everything under storage/ — including uploaded ID documents.
+#
+# Two jobs, in this order:
+#   1. map the short URL onto public/ so the app answers at /ultrademymain/
+#   2. refuse the files that must never be fetched, whichever URL asks for them
 #
 # This is defence in depth, NOT the real fix. The real fix is a vhost whose DocumentRoot
-# points at .../ultra/public — see docs/architecture/12-applications-students.md §8.
+# points at .../ultrademymain/public — see docs/architecture/12-applications-students.md §8.
 # Keep both: .htaccess protects the default XAMPP layout that developers actually run.
+
+# --- Serve the app from the project root -----------------------------------
+# The browser asks for  http://localhost/ultrademymain/login.php
+# Apache serves         .../ultrademymain/public/login.php
+#
+# The rewrite is INTERNAL: the address bar keeps the short URL, and because every
+# same-app link in this codebase is relative ("css/site.css", "login.php"), they all
+# resolve correctly under the shorter prefix without a single link being edited.
+#
+# This does not weaken the rules below. A request for /ultrademymain/.env is rewritten
+# to public/.env, which does not exist — and the FilesMatch denials still stand on top.
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Already inside public/ — leave it alone. Without this the per-directory rewrite
+    # re-enters and builds public/public/public/... until Apache gives up.
+    RewriteRule ^public/ - [L]
+
+    # Bare "/ultrademymain/" — name index.php explicitly rather than rewriting to the
+    # directory "public/", which would make mod_dir bounce the browser to the long URL.
+    RewriteRule ^$ public/index.php [L]
+
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
 
 # Dotfiles — .env, .env.local, .gitignore, and anything else beginning with a dot.
 <FilesMatch "^\.">

@@ -28,13 +28,60 @@ function env(string $key, mixed $default = null): mixed
     return $_ENV[$key] ?? getenv($key) ?: $default;
 }
 
+/**
+ * Where this application lives, worked out from the request itself.
+ *
+ * Used only when APP_URL is absent. It exists because the base URL is the one setting
+ * that silently breaks everything when it goes stale: same-app links are relative and
+ * keep working, so the app *looks* fine right up until a login redirect built by
+ * app_url() throws the user at a folder name that no longer exists.
+ *
+ * Deriving it from DOCUMENT_ROOT means renaming the project folder — ultra to
+ * ultrademymain, say — needs no edit anywhere. An explicit APP_URL still wins, because
+ * behind a real vhost or a proxy the filesystem no longer tells the truth about the URL.
+ */
+function ultrademy_detect_base_url(string $root): string
+{
+    // CLI: tests, cron, migrations. There is no request to read, and nothing that runs
+    // here should be minting absolute URLs anyway.
+    if (PHP_SAPI === 'cli' || empty($_SERVER['HTTP_HOST'])) {
+        return 'http://localhost';
+    }
+
+    $https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+        || (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https');
+    $scheme = $https ? 'https' : 'http';
+
+    // HTTP_HOST is attacker-controlled. Keep host-shaped characters only, so a poisoned
+    // header cannot smuggle a path or a second URL into every link on the page.
+    $host = preg_replace('/[^A-Za-z0-9.\-:\[\]]/', '', (string) $_SERVER['HTTP_HOST']);
+    if ($host === '') {
+        return 'http://localhost';
+    }
+
+    $docRoot = realpath((string) ($_SERVER['DOCUMENT_ROOT'] ?? ''));
+    $project = realpath($root);
+    $prefix = '';
+    if ($docRoot !== false && $project !== false) {
+        $docRoot = rtrim(str_replace('\\', '/', $docRoot), '/');
+        $project = rtrim(str_replace('\\', '/', $project), '/');
+        // Windows paths are case-insensitive; C:/xampp/htdocs and C:/XAMPP/htdocs are
+        // the same directory and must not produce two different base URLs.
+        if ($docRoot !== '' && stripos($project, $docRoot) === 0) {
+            $prefix = substr($project, strlen($docRoot));
+        }
+    }
+
+    return $scheme . '://' . $host . rtrim($prefix, '/');
+}
+
 // --- configuration -------------------------------------------------------
 $GLOBALS['ultrademy_config'] = [
     'app' => [
         'name'  => env('APP_NAME', 'Ultrademy'),
         'env'   => env('APP_ENV', 'local'),
         'debug' => filter_var(env('APP_DEBUG', 'false'), FILTER_VALIDATE_BOOL),
-        'url'   => env('APP_URL', 'http://localhost'),
+        'url'   => env('APP_URL') ?: ultrademy_detect_base_url($root),
         'root'  => $root,
     ],
     // Deliberately separate from app.url (docs/architecture/16-careers-portal.md §14) — the
@@ -42,7 +89,7 @@ $GLOBALS['ultrademy_config'] = [
     // still a path under the main app (path-based v1) or a real subdomain post-cutover.
     // Nothing in code should ever hard-code which of those two this currently is.
     'careers' => [
-        'url' => env('CAREERS_URL', 'http://localhost/ultra/public/careers'),
+        'url' => env('CAREERS_URL') ?: (rtrim((string) (env('APP_URL') ?: ultrademy_detect_base_url($root)), '/') . '/careers'),
     ],
     'db' => [
         'host'    => env('DB_HOST', '127.0.0.1'),

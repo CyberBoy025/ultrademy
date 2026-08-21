@@ -43,6 +43,8 @@ final class LearnController
             'enrolment' => $enrolment,
             'complete' => Progress::isCourseComplete($userId, $courseId),
             'certificate' => self::courseCertificate($userId, $courseId),
+            'assessments' => Assessment::forCourse($courseId, true),
+            'assessmentState' => self::assessmentState($courseId, $userId),
         ]);
         View::shell('learn', $course['title'], $main);
     }
@@ -208,6 +210,42 @@ final class LearnController
         $out = [];
         foreach ($rows as $r) {
             $out[(int) $r['assignment_id']] = $r;
+        }
+        return $out;
+    }
+
+    /**
+     * Per-assessment state for the course page: what the learner has used, what they
+     * scored, and whether they may start another sitting.
+     *
+     * Computed here rather than in the view so the "can I start?" rule lives in one place
+     * — AssessmentController::start() re-checks it server-side, and a button that appears
+     * when the server would refuse is worse than no button.
+     *
+     * @return array<int,array<string,mixed>>
+     */
+    private static function assessmentState(int $courseId, int $userId): array
+    {
+        $out = [];
+        foreach (Assessment::forCourse($courseId, true) as $a) {
+            $id = (int) $a['id'];
+            $attempts = Assessment::attemptsForUser($id, $userId);
+            $used = count(array_filter($attempts, static fn(array $t): bool => $t['status'] !== 'expired'));
+            $max = (int) $a['max_attempts'];
+            $open = Assessment::openAttempt($id, $userId);
+
+            $out[$id] = [
+                'attempts'   => $attempts,
+                'used'       => $used,
+                'open'       => $open,
+                'best'       => Assessment::bestPercent($id, $userId),
+                'isOpen'     => Assessment::isOpen($a),
+                'closedWhy'  => Assessment::closedReason($a),
+                'canStart'   => Assessment::isOpen($a)
+                                && (int) $a['question_count'] > 0
+                                && ($max === 0 || $used < $max || $open !== null),
+                'entitled'   => Entitlements::can('assessments'),
+            ];
         }
         return $out;
     }

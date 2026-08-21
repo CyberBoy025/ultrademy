@@ -11,6 +11,18 @@ $navItems = [
     'about'      => ['label' => 'About',       'href' => 'about.php'],
     'contact'    => ['label' => 'Contact',     'href' => 'contact.php'],
 ];
+
+// Giving only appears once someone has switched donations on and published an appeal.
+// A "Support Us" link that leads to an empty page costs more trust than it earns.
+if (class_exists('Donation') && Donation::enabled() && Donation::campaigns(true) !== []) {
+    $navItems['donate'] = ['label' => 'Support Us', 'href' => 'donate.php'];
+}
+
+// Corporate training appears once the enquiry form is open — a nav link to a closed form
+// is a dead end.
+if (class_exists('Corporate') && Corporate::enabled()) {
+    $navItems['corporate'] = ['label' => 'Corporate', 'href' => 'corporate.php'];
+}
 ?>
 <header class="site-header">
   <div class="wrap">

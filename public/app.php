@@ -90,6 +90,75 @@ match ($route) {
     'materials.download' => LearnController::downloadMaterial(),
     'submissions.download' => LearnController::downloadSubmission(),
 
+    // Assessments — quizzes and examinations (README §18-§20).
+    'assessments.manage'         => AssessmentController::manage(),
+    'assessments.store'          => AssessmentController::store(),
+    'assessments.edit'           => AssessmentController::edit(),
+    'assessments.update'         => AssessmentController::update(),
+    'assessments.status'         => AssessmentController::status(),
+    'assessments.question.store'  => AssessmentController::storeQuestion(),
+    'assessments.question.delete' => AssessmentController::deleteQuestion(),
+    'assessments.attempts'       => AssessmentController::attempts(),
+    'assessments.start'          => AssessmentController::start(),
+    'assessments.take'           => AssessmentController::take(),
+    'assessments.submit'         => AssessmentController::submit(),
+    'assessments.result'         => AssessmentController::result(),
+    'assessments.marking'        => AssessmentController::markingQueue(),
+    'assessments.mark'           => AssessmentController::mark(),
+    'assessments.marks.save'     => AssessmentController::saveMarks(),
+
+    // Donations — staff side. The public giving flow is public/donate.php, which has
+    // no session by design (README §9b).
+    'donations'                   => DonationController::index(),
+    'donations.export'            => DonationController::export(),
+    'donations.campaigns'         => DonationController::campaigns(),
+    'donations.campaigns.store'   => DonationController::storeCampaign(),
+    'donations.campaign'          => DonationController::campaign(),
+    'donations.campaigns.update'  => DonationController::updateCampaign(),
+    'donations.campaigns.status'  => DonationController::campaignStatus(),
+
+    // Affiliate programme (README §25). `affiliate` is every signed-in user's own page —
+    // it shows the application form until they are approved.
+    'affiliate'                    => AffiliateController::mine(),
+    'affiliate.apply'              => AffiliateController::apply(),
+    'affiliate.admin'              => AffiliateController::index(),
+    'affiliate.show'               => AffiliateController::show(),
+    'affiliate.decide'             => AffiliateController::decide(),
+    'affiliate.commissions'        => AffiliateController::commissions(),
+    'affiliate.commissions.decide' => AffiliateController::decideCommission(),
+    'affiliate.payout'             => AffiliateController::createPayout(),
+    'affiliate.payout.paid'        => AffiliateController::markPaid(),
+
+    // Management dashboards and reporting (README §32, §38, §16).
+    'management'          => ManagementController::dashboard(),
+    'management.centres'  => ManagementController::centres(),
+    'management.academic' => ManagementController::academic(),
+    'management.export'   => ManagementController::export(),
+
+    // Corporate training (README §46). The public enquiry form is public/corporate.php
+    // and the invitation flow is public/corporate-invite.php — both sessionless.
+    'corporate'                        => CorporateController::index(),
+    'corporate.organisations'          => CorporateController::organisations(),
+    'corporate.organisations.store'    => CorporateController::organisationStore(),
+    'corporate.organisation'           => CorporateController::organisation(),
+    'corporate.organisations.update'   => CorporateController::organisationUpdate(),
+    'corporate.contacts.store'         => CorporateController::contactStore(),
+    'corporate.requests'               => CorporateController::requests(),
+    'corporate.request'                => CorporateController::request(),
+    'corporate.requests.store'         => CorporateController::requestStore(),
+    'corporate.requests.update'        => CorporateController::requestUpdate(),
+    'corporate.proposals.store'        => CorporateController::proposalStore(),
+    'corporate.proposal'               => CorporateController::proposal(),
+    'corporate.proposals.status'       => CorporateController::proposalStatus(),
+    'corporate.contracts'              => CorporateController::contracts(),
+    'corporate.contracts.create'       => CorporateController::contractCreate(),
+    'corporate.contract'               => CorporateController::contract(),
+    'corporate.contracts.status'       => CorporateController::contractStatus(),
+    'corporate.participants.store'     => CorporateController::participantStore(),
+    'corporate.participants.invite'    => CorporateController::participantInvite(),
+    'corporate.participants.withdraw'  => CorporateController::participantWithdraw(),
+    'corporate.report'                 => CorporateController::report(),
+
     'chat'            => ChatController::index(),
     'chat.show'       => ChatController::show(),
     'chat.direct'     => ChatController::startDirect(),

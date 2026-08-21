@@ -73,6 +73,16 @@ final class Nav
             ];
         }
 
+        // Assessment marking sits beside assignment grading but is a distinct permission:
+        // an organisation may want a senior examiner marking papers without also handing
+        // them every assignment submission (086_assessment_permissions.sql).
+        if (Auth::can('education.assessment.grade')) {
+            $items[] = [
+                'key' => 'assessmentmarking', 'label' => 'Assessment Marking', 'href' => 'app.php?r=assessments.marking',
+                'icon' => '<path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h9"/>',
+            ];
+        }
+
         if (Auth::can('education.assignment.grade')) {
             $items[] = [
                 'key' => 'grading', 'label' => 'Grading', 'href' => 'app.php?r=grading',
@@ -208,6 +218,52 @@ final class Nav
             $items[] = [
                 'key' => 'refunds', 'label' => 'Refunds', 'href' => 'app.php?r=refunds',
                 'icon' => '<path d="M3 12a9 9 0 109-9"/><path d="M3 3v6h6"/>',
+            ];
+        }
+
+        // Entitlement-gated for learners, permission-gated for staff — the same feature
+        // seen from two sides. The controller is the real gate either way.
+        if (!Auth::isStaff() && Entitlements::can('affiliate_programme')) {
+            $items[] = [
+                'key' => 'affiliate', 'label' => 'Affiliate', 'href' => 'app.php?r=affiliate',
+                'icon' => '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/>',
+            ];
+        }
+        if (Auth::can('affiliate.referral.view_any')) {
+            $items[] = [
+                'key' => 'affiliateadmin', 'label' => 'Affiliates', 'href' => 'app.php?r=affiliate.admin',
+                'icon' => '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/>',
+            ];
+        }
+        if (Auth::can('affiliate.commission.approve')) {
+            $items[] = [
+                'key' => 'affiliatecommissions', 'label' => 'Commissions', 'href' => 'app.php?r=affiliate.commissions',
+                'icon' => '<path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>',
+            ];
+        }
+
+        // Sits high in the list: for management this is the landing page, and for a
+        // centre manager it is the operational summary of their own centre.
+        if (Auth::can('corporate.request.manage') || Auth::can('corporate.report.view')) {
+            $items[] = [
+                'key' => 'corporate', 'label' => 'Corporate',
+                'href' => Auth::can('corporate.request.manage') ? 'app.php?r=corporate' : 'app.php?r=corporate.contracts',
+                'icon' => '<path d="M3 21h18M5 21V7l7-4v18M19 21V11l-7-4"/><path d="M9 9h.01M9 13h.01M9 17h.01M15 13h.01M15 17h.01"/>',
+            ];
+        }
+
+        if (Auth::can('management.report.view')) {
+            $items[] = [
+                'key' => 'management', 'label' => 'Management', 'href' => 'app.php?r=management',
+                'icon' => '<path d="M3 3v18h18"/><path d="M7 15l4-5 4 3 5-7"/><circle cx="11" cy="10" r="1.5"/>',
+            ];
+        }
+
+        if (Auth::can('donation.view_any') || Auth::can('donation.campaign.manage')) {
+            $items[] = [
+                'key' => 'donations', 'label' => 'Donations',
+                'href' => Auth::can('donation.view_any') ? 'app.php?r=donations' : 'app.php?r=donations.campaigns',
+                'icon' => '<path d="M20.8 4.6a5.5 5.5 0 00-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 00-7.8 7.8l8.8 8.8 8.8-8.8a5.5 5.5 0 000-7.8z"/>',
             ];
         }
 

@@ -47,6 +47,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // enrolment, an application, an affiliate signup) is created, not at bare registration.
         Audit::log('user.registered', 'users', $userId, null, ['email' => $old['email']]);
 
+        // Attribute the signup if they arrived through an affiliate link. Fails silently
+        // on every rejection path (already referred, self-referral, programme closed) —
+        // a registration form is not the place to explain a refused referral.
+        Affiliate::attributeRegistration($userId, $_COOKIE[Affiliate::COOKIE] ?? null);
+
         Auth::attempt($old['email'], $password);
         header('Location: app.php');
         exit;

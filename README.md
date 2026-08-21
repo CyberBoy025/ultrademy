@@ -17,8 +17,11 @@
 > See `docs/architecture/09-` through `16-`, and [Working notes](#working-notes) at the end
 > for local setup, demo logins and repo workflow.
 >
+> **Local URL:** `http://localhost/ultrademymain/` — no `/public` on the end. The root
+> `.htaccess` maps the short URL onto `public/` internally.
+>
 > **Before any production deployment:** point the web server's DocumentRoot at
-> `ultra/public`. Serving the project folder directly exposes `.env` and uploaded
+> `ultrademymain/public`. Serving the project folder directly exposes `.env` and uploaded
 > documents — see `docs/architecture/12-applications-students.md` §8.
 
 ---
@@ -1600,8 +1603,8 @@ This scaffold is now live — Phase 4/5 code runs inside it directly (`app/core`
 2. Create the database: `mysql -u root -e "CREATE DATABASE ultrademy CHARACTER SET utf8mb4"`.
 3. Run migrations: `php database/migrate.php`.
 4. Seed demo data: `php database/seed.php` — prints the demo login list.
-5. Visit `http://localhost/ultra/public` for the marketing site, or
-   `http://localhost/ultra/public/login.php` to sign in (e.g. `super@ultrademy.com` /
+5. Visit `http://localhost/ultrademymain` for the marketing site, or
+   `http://localhost/ultrademymain/login.php` to sign in (e.g. `super@ultrademy.com` /
    `Password123!`) and reach the authenticated app at `public/app.php`.
 
 ### Pushing changes

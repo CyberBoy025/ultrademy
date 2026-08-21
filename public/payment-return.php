@@ -14,9 +14,28 @@
  */
 require __DIR__ . '/../config/bootstrap.php';
 Session::start();
-Auth::requireLogin();
 
 $reference = trim((string) ($_GET['reference'] ?? $_GET['tx_ref'] ?? $_GET['trxref'] ?? ''));
+
+// Donations arrive here as guests — most supporters have no account, and the gateway
+// callback URL is fixed per-provider rather than per-payment. Hand them to the public
+// status page, which is scoped to one donation by an unguessable token. Everything else
+// still requires a login before it reveals anything.
+if ($reference !== '') {
+    $ref = Payment::findByReference($reference) ?? Payment::findByGatewayReference($reference);
+    if ($ref !== null) {
+        $inv = Invoice::find((int) $ref['invoice_id']);
+        if ($inv && $inv['payable_type'] === 'donation') {
+            $donation = Donation::findByInvoice((int) $inv['id']);
+            if ($donation) {
+                header('Location: donate-status.php?t=' . urlencode($donation['public_token']));
+                exit;
+            }
+        }
+    }
+}
+
+Auth::requireLogin();
 $payment = $reference !== '' ? Payment::findByReference($reference) : null;
 if (!$payment && $reference !== '') {
     $payment = Payment::findByGatewayReference($reference);

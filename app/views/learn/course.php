@@ -1,7 +1,8 @@
 <?php
 /** @var array $course @var array $outline @var array $progress @var int $percent
  *  @var array $assignments @var array $submissions @var array|null $enrolment
- *  @var bool $complete @var array|null $certificate */
+ *  @var bool $complete @var array|null $certificate
+ *  @var array $assessments @var array $assessmentState */
 ?>
 <div class="topbar">
   <div>
@@ -65,6 +66,75 @@
   </div>
 </div>
 <?php endforeach; ?>
+
+<?php if ($assessments): ?>
+<h2 class="sec-title">Assessments</h2>
+<?php foreach ($assessments as $a):
+  $st = $assessmentState[(int) $a['id']] ?? null;
+  if (!$st) { continue; }
+  $maxAttempts = (int) $a['max_attempts']; ?>
+<div class="card" style="margin-bottom:12px">
+  <div class="chead">
+    <h3><?= View::e($a['title']) ?></h3>
+    <?php if ($st['best'] !== null): ?>
+      <span class="status-pill <?= $st['best'] >= (int) $a['pass_mark'] ? 'success' : 'error' ?>">Best <?= rtrim(rtrim((string) $st['best'], '0'), '.') ?>%</span>
+    <?php elseif ($st['open']): ?>
+      <span class="status-pill warning">In progress</span>
+    <?php elseif ($st['used'] > 0): ?>
+      <span class="status-pill neutral">Awaiting result</span>
+    <?php else: ?>
+      <span class="status-pill neutral">Not attempted</span>
+    <?php endif; ?>
+  </div>
+
+  <?php if ($a['instructions']): ?>
+    <p style="font-size:13px;color:var(--text-2);margin-bottom:8px"><?= nl2br(View::e($a['instructions'])) ?></p>
+  <?php endif; ?>
+
+  <p class="cap" style="margin-bottom:12px">
+    <?= View::e(Assessment::TYPES[$a['type']] ?? $a['type']) ?>
+    · <?= (int) $a['question_count'] ?> question(s)
+    · <?= (int) $a['max_points'] ?> mark(s)
+    · pass <?= (int) $a['pass_mark'] ?>%
+    <?php if ($a['duration_minutes']): ?> · <?= (int) $a['duration_minutes'] ?> min<?php endif; ?>
+    · <?= $maxAttempts === 0 ? 'unlimited attempts' : $st['used'] . ' of ' . $maxAttempts . ' attempt(s) used' ?>
+    <?php if ($a['closes_at']): ?> · closes <?= View::e(date('d M Y H:i', strtotime((string) $a['closes_at']))) ?><?php endif; ?>
+  </p>
+
+  <?php if ($st['attempts']): ?>
+  <div class="queue" style="margin-bottom:12px">
+    <?php foreach ($st['attempts'] as $t): if ($t['status'] === 'in_progress') { continue; } ?>
+    <div class="queue-item">
+      <div class="queue-t">
+        <h4>Attempt <?= (int) $t['attempt_no'] ?><?= $t['status'] === 'graded' ? ' — ' . rtrim(rtrim((string) $t['score_percent'], '0'), '.') . '%' : '' ?></h4>
+        <p><?= $t['submitted_at'] ? View::e(date('d M Y H:i', strtotime((string) $t['submitted_at']))) : '—' ?>
+           <?= (int) $t['needs_manual_grade'] === 1 ? ' · awaiting marking' : '' ?></p>
+      </div>
+      <a class="btn sm" href="app.php?r=assessments.result&id=<?= (int) $t['id'] ?>">Result</a>
+    </div>
+    <?php endforeach; ?>
+  </div>
+  <?php endif; ?>
+
+  <?php if (!$st['entitled']): ?>
+    <p class="cap">Assessments aren't included in your current package.
+      <a href="app.php?r=subscription" style="color:var(--brand-cyan-text);font-weight:600">See packages</a>.</p>
+  <?php elseif ($st['open']): ?>
+    <a class="btn primary btn-sm" href="app.php?r=assessments.take&id=<?= (int) $st['open']['id'] ?>">Resume attempt</a>
+  <?php elseif ($st['canStart']): ?>
+    <form method="post" action="app.php?r=assessments.start"
+          onsubmit="return confirm('Start this <?= $a['duration_minutes'] ? 'timed ' : '' ?>assessment now?<?= $maxAttempts === 1 ? ' You get one attempt.' : '' ?>')">
+      <?= Csrf::field() ?><input type="hidden" name="assessment_id" value="<?= (int) $a['id'] ?>">
+      <button type="submit" class="btn primary btn-sm"><?= $st['used'] > 0 ? 'Start another attempt' : 'Start' ?></button>
+    </form>
+  <?php elseif ($st['closedWhy']): ?>
+    <p class="cap"><?= View::e($st['closedWhy']) ?></p>
+  <?php else: ?>
+    <p class="cap">You have used all permitted attempts.</p>
+  <?php endif; ?>
+</div>
+<?php endforeach; ?>
+<?php endif; ?>
 
 <?php if ($assignments): ?>
 <h2 class="sec-title">Assignments</h2>
