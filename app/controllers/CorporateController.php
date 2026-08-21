@@ -321,10 +321,12 @@ final class CorporateController
     {
         Auth::requirePermission('corporate.participant.manage');
         Csrf::requireValid();
-        $error = Corporate::invite((int) $_POST['participant_id']);
+        $participantId = (int) $_POST['participant_id'];
+        $contract = self::contractForParticipant($participantId);
+        $error = Corporate::invite($participantId);
         Session::flash($error === '' ? 'success' : 'error',
             $error === '' ? 'Invitation link generated — copy it from the list and send it on.' : $error);
-        header('Location: app.php?r=corporate.contract&id=' . (int) $_POST['contract_id']);
+        header('Location: app.php?r=corporate.contract&id=' . ($contract['id'] ?? (int) $_POST['contract_id']));
         exit;
     }
 
@@ -332,10 +334,30 @@ final class CorporateController
     {
         Auth::requirePermission('corporate.participant.manage');
         Csrf::requireValid();
-        Corporate::withdrawParticipant((int) $_POST['participant_id']);
+        $participantId = (int) $_POST['participant_id'];
+        $contract = self::contractForParticipant($participantId);
+        Corporate::withdrawParticipant($participantId);
         Session::flash('success', 'Participant withdrawn — their seat is free again.');
-        header('Location: app.php?r=corporate.contract&id=' . (int) $_POST['contract_id']);
+        header('Location: app.php?r=corporate.contract&id=' . ($contract['id'] ?? (int) $_POST['contract_id']));
         exit;
+    }
+
+    /**
+     * Resolves a participant to its contract and enforces the same centre scope
+     * participantStore()/contract() already apply — a participant_id posted on its own
+     * must not let a scoped viewer reach a contract outside their centre.
+     */
+    private static function contractForParticipant(int $participantId): array
+    {
+        $participant = Corporate::findParticipant($participantId);
+        if (!$participant) {
+            http_response_code(404);
+            echo 'Participant not found.';
+            exit;
+        }
+        $contract = Corporate::findContract((int) $participant['contract_id']);
+        self::assertCentreScope($contract ?? []);
+        return $contract ?? [];
     }
 
     // --------------------------------------------------------------------- report

@@ -21,9 +21,48 @@ declare(strict_types=1);
  */
 final class Learning
 {
+    /**
+     * UI-only: "should this page show the staff chrome (banner, unlocked materials)?"
+     * NOT a security gate — it does not check which course. hasCourseAccess($courseId)
+     * is the gate; use that for anything that decides whether a request may proceed.
+     */
     public static function isStaffViewer(): bool
     {
         return Auth::can('education.lesson.view') || Auth::can('education.course.update');
+    }
+
+    /**
+     * The real per-course security gate. 03-rbac.md §5 grades both `education.lesson.view`
+     * and `education.course.update` `◐ (assigned)` for instructors — scoped to the courses
+     * they actually teach, not every course in the system. A centre_manager's `◐` is
+     * centre-scoped instead, since a course is not something one person is "assigned" to
+     * the way an instructor is. Only administrator's `education.course.update` and
+     * management's `education.lesson.view` are genuinely global (● in the matrix).
+     */
+    public static function hasCourseAccess(int $courseId): bool
+    {
+        if (Auth::isSuperAdmin()) {
+            return true;
+        }
+        if (Auth::can('education.course.update') && Auth::scopeCentres('education.course.update') === null) {
+            return true; // administrator's true global grant
+        }
+        if (Auth::can('education.lesson.view') && Auth::scopeCentres('education.lesson.view') === null) {
+            return true; // management's true global grant
+        }
+        if (!Auth::can('education.lesson.view') && !Auth::can('education.course.update')) {
+            return false; // not staff on this at all
+        }
+
+        if (in_array($courseId, self::courseIdsForInstructor((int) Auth::id()), true)) {
+            return true;
+        }
+
+        $centreScope = Auth::scopeCentres('education.lesson.view');
+        if ($centreScope !== null && $centreScope !== []) {
+            return in_array($courseId, self::courseIdsForCentres($centreScope), true);
+        }
+        return false;
     }
 
     public static function canManage(): bool
@@ -55,7 +94,7 @@ final class Learning
      */
     public static function requireCourseAccess(int $courseId): ?array
     {
-        if (self::isStaffViewer()) {
+        if (self::hasCourseAccess($courseId)) {
             return null;
         }
 
@@ -74,10 +113,12 @@ final class Learning
     /** A lesson flagged as preview is readable by any signed-in user. */
     public static function requireLessonAccess(array $lesson): ?array
     {
-        if ((int) $lesson['is_preview'] === 1 || self::isStaffViewer()) {
-            return self::isStaffViewer() ? null : self::enrolmentForCourse((int) $lesson['course_id']);
+        $courseId = (int) $lesson['course_id'];
+        $hasAccess = self::hasCourseAccess($courseId);
+        if ((int) $lesson['is_preview'] === 1 || $hasAccess) {
+            return $hasAccess ? null : self::enrolmentForCourse($courseId);
         }
-        return self::requireCourseAccess((int) $lesson['course_id']);
+        return self::requireCourseAccess($courseId);
     }
 
     /** Courses an instructor is responsible for, via the cohorts they teach. */
@@ -90,6 +131,22 @@ final class Learning
              WHERE cg.instructor_user_id = :u',
             ['u' => $userId]
         );
+        return array_map('intval', array_column($rows, 'course_id'));
+    }
+
+    /** Courses offered at any of the given centres, via the cohorts running there. */
+    public static function courseIdsForCentres(array $centreIds): array
+    {
+        if ($centreIds === []) {
+            return [];
+        }
+        $placeholders = implode(',', array_fill(0, count($centreIds), '?'));
+        $rows = Database::query(
+            "SELECT DISTINCT pc.course_id FROM cohorts co
+             JOIN programme_courses pc ON pc.programme_id = co.programme_id
+             WHERE co.centre_id IN ($placeholders)",
+            $centreIds
+        )->fetchAll();
         return array_map('intval', array_column($rows, 'course_id'));
     }
 }

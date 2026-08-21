@@ -21,6 +21,13 @@ final class StaffController
         $roleId = (int) ($_POST['role_id'] ?? 0);
         $isPrimary = isset($_POST['is_primary']);
 
+        $role = Role::find($roleId);
+        if (!$role || !Auth::mayGrantRole($role['code'])) {
+            http_response_code(403);
+            require dirname(__DIR__) . '/views/errors/403.php';
+            exit;
+        }
+
         $user = User::findByEmail($email);
         if (!$user) {
             Session::flash('error', "No account found for $email — the person needs to register first.");
@@ -64,7 +71,12 @@ final class StaffController
         }
         $roleId = (int) $_POST['role_id'];
         $role = Role::find($roleId);
-        $centreId = ($role && $role['is_scopable'] && $_POST['centre_id'] !== '') ? (int) $_POST['centre_id'] : null;
+        if (!$role || !Auth::mayGrantRole($role['code'])) {
+            http_response_code(403);
+            require dirname(__DIR__) . '/views/errors/403.php';
+            exit;
+        }
+        $centreId = ($role['is_scopable'] && $_POST['centre_id'] !== '') ? (int) $_POST['centre_id'] : null;
 
         $id = User::create(
             $email,

@@ -144,6 +144,30 @@ final class Auth
     public const NON_STAFF_ROLES = ['student', 'applicant', 'affiliate'];
 
     /**
+     * Roles that control the platform itself rather than operate within it — never
+     * grantable through StaffController's ordinary "assign staff" / "create user" forms.
+     */
+    public const PLATFORM_ROLES = ['super_admin', 'management', 'administrator'];
+
+    /**
+     * Backs the `identity.role.assign` promise in 03-rbac.md §5: "an admin may not grant
+     * super_admin, and may not grant a role broader than one they hold. Privilege
+     * escalation is blocked at the service, not the UI." A super_admin may grant anything;
+     * anyone else may grant an ordinary operational role (centre_manager, cashier,
+     * instructor, receptionist, accountant) but never one of the platform roles above, and
+     * never the system-granted relationship roles in NON_STAFF_ROLES (03-rbac.md §2: "never
+     * assigned by hand").
+     */
+    public static function mayGrantRole(string $roleCode): bool
+    {
+        if (self::isSuperAdmin()) {
+            return true;
+        }
+        return !in_array($roleCode, self::PLATFORM_ROLES, true)
+            && !in_array($roleCode, self::NON_STAFF_ROLES, true);
+    }
+
+    /**
      * True if the user holds any role that is not purely a customer relationship.
      *
      * This is the line between "listings are centre-scoped" and "listings are

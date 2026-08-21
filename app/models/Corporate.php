@@ -529,6 +529,11 @@ final class Corporate
         );
     }
 
+    public static function findParticipant(int $id): ?array
+    {
+        return Database::one('SELECT * FROM contract_participants WHERE id = :id', ['id' => $id]);
+    }
+
     public static function findParticipantByToken(string $token): ?array
     {
         return Database::one(

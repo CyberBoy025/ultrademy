@@ -179,7 +179,12 @@ final class LearnController
             return;
         }
         $isOwner = (int) $submission['user_id'] === (int) Auth::id();
-        if (!$isOwner && !Auth::can('education.assignment.grade')) {
+        // education.assignment.grade is ◐ for instructors (03-rbac.md) — scoped to the
+        // courses they teach, not every submission in the system.
+        $isGraderInScope = Auth::isSuperAdmin()
+            || (Auth::can('education.assignment.grade')
+                && in_array((int) $submission['course_id'], Learning::courseIdsForInstructor((int) Auth::id()), true));
+        if (!$isOwner && !$isGraderInScope) {
             http_response_code(403);
             echo 'Not permitted.';
             return;

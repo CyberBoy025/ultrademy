@@ -90,6 +90,7 @@ final class CentreController
         Auth::requirePermission('operations.room.manage');
         Csrf::requireValid();
         $centreId = (int) $_POST['centre_id'];
+        self::assertCentreInScope($centreId, 'operations.room.manage');
         $id = Room::create($centreId, trim((string) $_POST['name']), $_POST['type'], (int) ($_POST['capacity'] ?? 0));
         Audit::log('room.created', 'rooms', $id, null, ['centre_id' => $centreId]);
         Session::flash('success', 'Room added.');
@@ -101,9 +102,18 @@ final class CentreController
     {
         Auth::requirePermission('operations.room.manage');
         Csrf::requireValid();
+        $room = Room::find((int) $_POST['id']);
+        if (!$room) {
+            http_response_code(404);
+            echo 'Room not found.';
+            return;
+        }
+        // The room's own centre_id, not the posted one — the redirect target and the
+        // authorization target must never be the same trusted-from-request value.
+        self::assertCentreInScope((int) $room['centre_id'], 'operations.room.manage');
         Room::setStatus((int) $_POST['id'], $_POST['status']);
         Session::flash('success', 'Room status updated.');
-        header('Location: app.php?r=centres.show&id=' . (int) $_POST['centre_id']);
+        header('Location: app.php?r=centres.show&id=' . (int) $room['centre_id']);
         exit;
     }
 
@@ -112,11 +122,28 @@ final class CentreController
         Auth::requirePermission('operations.equipment.manage');
         Csrf::requireValid();
         $centreId = (int) $_POST['centre_id'];
+        self::assertCentreInScope($centreId, 'operations.equipment.manage');
         $roomId = $_POST['room_id'] !== '' ? (int) $_POST['room_id'] : null;
         $id = Equipment::create($centreId, $roomId, trim((string) $_POST['asset_tag']), trim((string) $_POST['name']));
         Audit::log('equipment.created', 'equipment', $id, null, ['centre_id' => $centreId]);
         Session::flash('success', 'Equipment added.');
         header('Location: app.php?r=centres.show&id=' . $centreId);
         exit;
+    }
+
+    /**
+     * The same check show() already applies via its `__denied__` trick, factored out so
+     * the write actions (add/edit a room or equipment) enforce it too — a scoped
+     * centre_manager must not be able to add a room to a centre they do not manage just
+     * because the form posts a centre_id of its own choosing.
+     */
+    private static function assertCentreInScope(int $centreId, string $permission): void
+    {
+        $scope = Auth::scopeCentres($permission);
+        if ($scope !== null && !in_array($centreId, $scope, true)) {
+            http_response_code(403);
+            require dirname(__DIR__) . '/views/errors/403.php';
+            exit;
+        }
     }
 }

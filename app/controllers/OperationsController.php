@@ -20,6 +20,13 @@ final class OperationsController
         $code = 'COH-' . strtoupper(bin2hex(random_bytes(3)));
         $centreId = $_POST['centre_id'] !== '' ? (int) $_POST['centre_id'] : null;
 
+        $scope = Auth::scopeCentres('operations.cohort.manage');
+        if ($scope !== null && ($centreId === null || !in_array($centreId, $scope, true))) {
+            Session::flash('error', 'You can only create cohorts for your own centre.');
+            header('Location: app.php?r=programmes.show&id=' . $programmeId);
+            exit;
+        }
+
         $id = Cohort::create($programmeId, $centreId, $code, $name, $_POST['starts_on'] ?: null, $_POST['ends_on'] ?: null, null);
         Audit::log('cohort.created', 'cohorts', $id, null, ['name' => $name, 'programme_id' => $programmeId]);
         Session::flash('success', "Cohort \"$name\" created.");
@@ -37,6 +44,7 @@ final class OperationsController
             echo 'Cohort not found.';
             return;
         }
+        self::assertCohortInScope($cohort);
         $groups = ClassGroup::forCohort($id);
         foreach ($groups as &$g) {
             $g['sessions'] = ClassSession::forGroup((int) $g['id']);
@@ -57,6 +65,13 @@ final class OperationsController
         Auth::requirePermission('operations.cohort.manage');
         Csrf::requireValid();
         $id = (int) $_POST['id'];
+        $cohort = Cohort::find($id);
+        if (!$cohort) {
+            http_response_code(404);
+            echo 'Cohort not found.';
+            return;
+        }
+        self::assertCohortInScope($cohort);
         Cohort::setStatus($id, $_POST['status']);
         Audit::log('cohort.status_changed', 'cohorts', $id, null, ['status' => $_POST['status']]);
         Session::flash('success', 'Cohort status updated.');
@@ -69,6 +84,13 @@ final class OperationsController
         Auth::requirePermission('operations.cohort.manage');
         Csrf::requireValid();
         $cohortId = (int) $_POST['cohort_id'];
+        $cohort = Cohort::find($cohortId);
+        if (!$cohort) {
+            http_response_code(404);
+            echo 'Cohort not found.';
+            return;
+        }
+        self::assertCohortInScope($cohort);
         $instructorId = $_POST['instructor_user_id'] !== '' ? (int) $_POST['instructor_user_id'] : null;
         $id = ClassGroup::create($cohortId, $instructorId, trim((string) $_POST['name']), $_POST['capacity'] !== '' ? (int) $_POST['capacity'] : null);
         Audit::log('class_group.created', 'class_groups', $id, null, ['cohort_id' => $cohortId]);
@@ -82,13 +104,22 @@ final class OperationsController
         Auth::requirePermission('operations.session.schedule');
         Csrf::requireValid();
         $groupId = (int) $_POST['class_group_id'];
+        $group = ClassGroup::find($groupId);
+        if (!$group) {
+            http_response_code(404);
+            echo 'Class group not found.';
+            return;
+        }
+        $cohort = Cohort::find((int) $group['cohort_id']);
+        if ($cohort) {
+            self::assertCohortInScope($cohort, 'operations.session.schedule');
+        }
         $roomId = $_POST['room_id'] !== '' ? (int) $_POST['room_id'] : null;
         $mode = $roomId === null ? 'online' : 'physical';
         $id = ClassSession::create($groupId, $roomId, trim((string) $_POST['topic']), $_POST['starts_at'], $_POST['ends_at'], $mode);
         Audit::log('class_session.created', 'class_sessions', $id, null, ['class_group_id' => $groupId]);
         Session::flash('success', 'Session scheduled.');
 
-        $group = ClassGroup::find($groupId);
         header('Location: app.php?r=cohorts.show&id=' . ($group['cohort_id'] ?? ''));
         exit;
     }
@@ -193,5 +224,25 @@ final class OperationsController
              JOIN user_roles ur ON ur.user_id = u.id JOIN roles r ON r.id = ur.role_id
              WHERE r.code = 'instructor' GROUP BY u.id ORDER BY name"
         );
+    }
+
+    /**
+     * A cohort reached by id — show/status/class-group/session actions — must stay
+     * within the caller's centre scope just as much as the listing already does.
+     * Without this a centre-scoped manager could read or edit any centre's cohort by
+     * guessing its id, even though cohorts() correctly filters the list they browse.
+     */
+    private static function assertCohortInScope(array $cohort, string $permission = 'operations.cohort.manage'): void
+    {
+        $scope = Auth::scopeCentres($permission);
+        if ($scope === null) {
+            return;
+        }
+        $centreId = $cohort['centre_id'] !== null ? (int) $cohort['centre_id'] : null;
+        if ($centreId === null || !in_array($centreId, $scope, true)) {
+            http_response_code(403);
+            require dirname(__DIR__) . '/views/errors/403.php';
+            exit;
+        }
     }
 }

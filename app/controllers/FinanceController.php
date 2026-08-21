@@ -236,8 +236,17 @@ final class FinanceController
             header('Location: app.php?r=expenses');
             exit;
         }
+
+        $centreId = ($_POST['centre_id'] ?? '') !== '' ? (int) $_POST['centre_id'] : null;
+        $scope = Auth::scopeCentres('finance.expense.record');
+        if ($scope !== null && ($centreId === null || !in_array($centreId, $scope, true))) {
+            Session::flash('error', 'You can only record expenses for your own centre.');
+            header('Location: app.php?r=expenses');
+            exit;
+        }
+
         $id = Expense::create(
-            ($_POST['centre_id'] ?? '') !== '' ? (int) $_POST['centre_id'] : null,
+            $centreId,
             $category,
             $amount,
             trim((string) ($_POST['description'] ?? '')),

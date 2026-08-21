@@ -356,6 +356,7 @@ final class AssessmentController
             self::notFound('Attempt not found.');
             return;
         }
+        self::assertGraderInScope($attempt);
         $main = View::render('assessments/mark', [
             'assessment' => Assessment::find((int) $attempt['assessment_id']),
             'attempt'    => $attempt,
@@ -374,6 +375,7 @@ final class AssessmentController
             self::notFound('Attempt not found.');
             return;
         }
+        self::assertGraderInScope($attempt);
 
         $points   = (array) ($_POST['points'] ?? []);
         $feedback = (array) ($_POST['feedback'] ?? []);
@@ -469,5 +471,24 @@ final class AssessmentController
     {
         http_response_code(403);
         require dirname(__DIR__) . '/views/errors/403.php';
+    }
+
+    /**
+     * education.assessment.grade is ◐ for instructors (03-rbac.md), scoped to the
+     * courses they actually teach — same rule markingQueue() already applies to the
+     * listing via Learning::courseIdsForInstructor(). mark()/saveMarks() reach a specific
+     * attempt by id and must apply the identical check, or an instructor could mark any
+     * course's attempts just by knowing/guessing the id.
+     */
+    private static function assertGraderInScope(array $attempt): void
+    {
+        if (Auth::isSuperAdmin() || Auth::can('education.course.update')) {
+            return;
+        }
+        $courseIds = Learning::courseIdsForInstructor((int) Auth::id());
+        if (!in_array((int) $attempt['course_id'], $courseIds, true)) {
+            self::forbidden();
+            exit;
+        }
     }
 }
