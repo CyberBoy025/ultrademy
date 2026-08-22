@@ -10,10 +10,11 @@ declare(strict_types=1);
  * SMTP." In-app rows are written immediately by Notify::send(); email rows sit here with
  * sent_at NULL until this job runs.
  *
- * NO MAIL TRANSPORT IS CONFIGURED. Rather than call PHP's mail() — which silently
- * succeeds on a machine with no MTA and would make the queue *look* delivered — this job
- * reports the backlog and leaves it untouched. Set `mail_transport` in Settings and
- * implement the send below when a provider is chosen (Decision: still open).
+ * Transport is `mail_transport` in Settings (empty by default — deliberately not PHP's
+ * mail(), which silently succeeds on a box with no MTA and would make the queue *look*
+ * delivered). Set it to "smtp" and fill in SMTP_HOST/SMTP_USER/SMTP_PASS in .env (see
+ * Mailer::configured()) to actually send; until then this job reports the backlog and
+ * leaves it untouched.
  *
  * Retries: 3 attempts with backoff, then the row is marked failed so an administrator can
  * see it. A silently dropped admission notice is a real-world problem (§2).
@@ -51,9 +52,23 @@ foreach ($pending as $row) {
     Database::query('UPDATE notifications SET attempts = attempts + 1 WHERE id = :id', ['id' => $row['id']]);
 
     try {
-        // Deliberately not implemented: wiring mail() here would report success on a box
-        // with no MTA. Whoever adds a provider implements it at this point.
-        throw new RuntimeException("Transport '$transport' is configured but not implemented.");
+        if ($transport !== 'smtp') {
+            throw new RuntimeException("Transport '$transport' is configured but not implemented.");
+        }
+        if (!Mailer::configured()) {
+            throw new RuntimeException('SMTP transport selected but SMTP_HOST/SMTP_USER/SMTP_PASS are not fully set in .env.');
+        }
+        $result = Mailer::send(
+            (string) $row['email'],
+            (string) $row['name'],
+            (string) $row['title'],
+            Mailer::notificationHtml((string) $row['title'], $row['body'] ?? null, $row['url'] ?? null)
+        );
+        if ($result !== true) {
+            throw new RuntimeException($result);
+        }
+        Database::query('UPDATE notifications SET sent_at = NOW() WHERE id = :id', ['id' => $row['id']]);
+        $sent++;
     } catch (Throwable $e) {
         $attempts = ((int) $row['attempts']) + 1;
         Database::query(

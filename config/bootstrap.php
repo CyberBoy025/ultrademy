@@ -107,6 +107,18 @@ $GLOBALS['ultrademy_config'] = [
         'pass'    => env('DB_PASS', ''),
         'charset' => env('DB_CHARSET', 'utf8mb4'),
     ],
+    // Outbound SMTP for the notification queue (database/notifications-cron.php). Only
+    // env-configured — credentials never sit in the `settings` table, which the Settings
+    // page renders back in plain text to anyone with platform.setting.update.
+    'mail' => [
+        'host'       => env('SMTP_HOST', ''),
+        'port'       => (int) env('SMTP_PORT', 465),
+        'secure'     => env('SMTP_SECURE', 'ssl'),
+        'user'       => env('SMTP_USER', ''),
+        'pass'       => env('SMTP_PASS', ''),
+        'from_email' => env('MAIL_FROM_EMAIL', ''),
+        'from_name'  => env('MAIL_FROM_NAME', env('APP_NAME', 'Ultrademy')),
+    ],
 ];
 
 /** Dot-notation config lookup: config('db.host') */

@@ -4,8 +4,10 @@
 !.env.example
 config/local.php
 
-# Dependencies
-/vendor/
+# Dependencies — no Composer in this project; vendor/phpmailer is hand-vendored source
+# the app actually requires at runtime (app/core/Mailer.php), so it's tracked, not ignored.
+/vendor/*
+!/vendor/phpmailer/
 /node_modules/
 
 # Uploads & user content
